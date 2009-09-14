@@ -1,0 +1,50 @@
+# $Id: Portfile 55901 2009-08-20 23:31:24Z ryandesign@macports.org $
+
+PortSystem                      1.0
+
+name                            pure-doc
+version                         0.5
+categories                      textproc
+platforms                       darwin
+maintainers                     ryandesign
+use_parallel_build              yes
+homepage                        http://pure-lang.googlecode.com/
+master_sites                    ${homepage}files/
+
+description                     a utility for literate programming and \
+                                documenting source code in Pure
+
+long_description                ${name} is a simple utility for literate \
+                                programming and documenting source code \
+                                written in the Pure programming language.
+
+checksums                       md5     4cfda181bdf4e0baa8fd0a8ed450258e \
+                                sha1    f5b0534a4324ce296a22fb4d33f748fdea6598ff \
+                                rmd160  dba12a859ae892dd2fc470579d096e7ad757fc81
+
+depends_build-append            path:bin/flex:flex
+
+depends_lib-append              path:lib/libpure.dylib:pure
+
+use_configure                   no
+
+pre-build {
+    build.args-append           CC=${configure.cc} \
+                                CFLAGS="${configure.cflags}" \
+                                CPPFLAGS="${configure.cppflags}" \
+                                CXX=${configure.cxx} \
+                                LDFLAGS="${configure.ldflags}"
+}
+
+post-destroot {
+    xinstall -d \
+        ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        COPYING \
+        README \
+        ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.check                 regex
+livecheck.url                   http://code.google.com/p/pure-lang/downloads/list
+livecheck.regex                 ${name}-(\[0-9.\]+)\\.tar

@@ -1,0 +1,130 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54292 2009-07-24 17:38:40Z jmr@macports.org $
+
+PortSystem      1.0
+
+name            fontforge
+version         20090622
+set ftversion   2.3.9
+categories      graphics fonts
+platforms       darwin
+maintainers     nomaintainer
+description     Outline and bitmap font editor/converter for many formats
+
+long_description \
+    FontForge allows you to edit outline and bitmap fonts.  You may create \
+    new ones or modify old ones.  It is also a format converter and can \
+    interconvert between PostScript (ascii & binary Type1, some Type3, \
+    some Type0), TrueType, OpenType (Type2), CID, SVG.  Previously known as \
+    pfaedit.
+
+homepage        http://fontforge.sourceforge.net/
+master_sites    sourceforge \
+                ${homepage}:cidmaps \
+                http://download.savannah.gnu.org/releases/freetype/:freetype \
+                sourceforge:freetype:freetype
+distname        ${name}_full-${version}
+dist_subdir     ${name}/${version}_${revision}
+use_bzip2       yes
+
+set docdistname ${name}_htdocs-${version}
+
+distfiles-append \
+    cidmaps.tgz:cidmaps \
+    [suffix ${docdistname}]
+
+patchfiles      patch-Makefile.dynamic.in.diff \
+                patch-fontforge_start.c.diff \
+                patch-gutils_dynamic.c.diff \
+                patch-configure.in.diff \
+                patch-inc_utype.h.diff
+
+checksums       [suffix ${distname}] \
+                md5     3f4ff2d2dab200f47595bff38baa13ca \
+                sha1    bc638eeeb4cf2d540773bacc52cc6bac1c6ca76f \
+                rmd160  ba9983bf667091e0e9b88fcabf865c65ba2debbd \
+                cidmaps.tgz \
+                md5     063691163e592515b31514515bb3ce8c \
+                sha1    efbc7c9d3e95159f5600dc71f9cccb370e46bb94 \
+                rmd160  d194355e61813d31fe4813bdf10a62d66a9f6d04 \
+                [suffix ${docdistname}] \
+                md5     db6003b077e9fe6b9ba1d9f64dbe3569 \
+                sha1    657bd8ff73245fb04c765a3ecf2276ea050021ff \
+                rmd160  6b8a319a5b2825ffaa5436bed2434403f953b372 \
+                [suffix freetype-${ftversion}] \
+                md5     d76233108aca9c9606cdbd341562ad9a \
+                sha1    db08969cb5053879ff9e973fe6dd2c52c7ea2d4e \
+                rmd160  c0351c2a3f43e64d26d2a964b1131a3dbf2fa162
+
+worksrcdir      ${name}-${version}
+
+extract.only    [suffix ${distname}]
+
+post-extract {
+    xinstall -d \
+        ${worksrcpath}/cidmap \
+        ${worksrcpath}/htdocs
+
+    system "tar xzf ${distpath}/cidmaps.tgz -C ${worksrcpath}/cidmap"
+    system "tar xjf ${distpath}/[suffix ${docdistname}] -C ${worksrcpath}/htdocs"
+}
+
+post-patch {
+    reinplace "s|@PREFIX@|${prefix}|g" \
+        ${worksrcpath}/gutils/dynamic.c
+    reinplace "/^applicationsdir/s|/Applications|${applications_dir}|" \
+        ${worksrcpath}/Makefile.dynamic.in
+}
+
+depends_lib \
+                port:xorg-libXi \
+                port:xorg-libxkbui \
+                port:xorg-libXt \
+                port:freetype \
+                port:gettext \
+                port:giflib \
+                port:jpeg \
+                port:libiconv \
+                port:libpng \
+                port:libuninameslist \
+                port:libxml2 \
+                port:tiff \
+                port:zlib
+
+depends_build   port:autoconf
+use_autoconf    yes
+
+configure.args  --mandir=${prefix}/share/man \
+                --enable-type3 \
+                --enable-devicetables \
+                --enable-gb12345 \
+                --without-python \
+                --without-freetype-bytecode \
+                --without-pango \
+                --without-cairo \
+                --x-includes=${prefix}/include \
+                --x-libraries=${prefix}/lib
+
+use_parallel_build  yes
+
+set docdir      ${prefix}/share/doc/${name}-${version}
+
+destroot.args   docdir=${docdir}
+
+post-destroot {
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        AUTHORS INSTALL LICENSE README-Mac.html README-Unix.html README-unix \
+        ${destroot}${docdir}
+}
+
+variant with_freetype_bytecode description {Enable support for bytecode interpreter} {
+    distfiles-append        freetype-${ftversion}${extract.suffix}:freetype
+    extract.only-append     freetype-${ftversion}${extract.suffix}
+    configure.args-delete   --without-freetype-bytecode
+    configure.args-append   --with-freetype-src=${workpath}/freetype-${ftversion}
+}
+
+livecheck.distname  ${name}-source
+
+universal_variant   no

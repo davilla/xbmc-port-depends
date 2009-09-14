@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53175 2009-06-30 19:52:36Z devans@macports.org $
+
+PortSystem 1.0
+
+name		gcalctool
+version		5.26.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	a GNOME 2 desktop calculator.
+long_description        gcalctool is the desktop calculator that has been proposed \
+			for GNOME. It has Basic, Financial and Scientific modes.
+maintainers	nomaintainer
+categories	gnome math
+platforms	darwin
+homepage	http://calctool.sourceforge.net/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     4208595c1992c50a7f71882a23e76190 \
+                sha1    311b7dda8569e6737af20c3ba61af73582e7ee3a \
+                rmd160  02852922cf88825c8473851bf32fbd33a59a03ff
+
+use_bzip2	yes
+
+depends_build 	port:pkgconfig \
+                port:intltool \
+                port:p5-xml-parser \
+                port:gnome-doc-utils
+
+depends_lib 	port:gconf \
+                port:libglade2
+
+configure.args  --disable-scrollkeeper \
+                --disable-schemas-install
+
+post-activate	{
+	system "${prefix}/bin/scrollkeeper-update"
+        system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+             gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

@@ -1,0 +1,107 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 56362 2009-08-26 17:26:31Z alakazam@macports.org $
+
+PortSystem 1.0
+
+name                octave
+version             3.2.2
+categories          math science
+maintainers         alakazam stechert
+platforms           darwin
+description         a Matlab-like environment for numerical analysis
+long_description    Octave provides a convenient command line interface \
+                    for solving linear and nonlinear problems numerically, \
+                    using a language that is mostly compatible with Matlab. \
+                    It is easily extensible and customizable via \
+                    user-defined functions or using dynamically loaded \
+                    modules written in e.g. C++, C or Fortran.
+
+homepage            http://www.gnu.org/software/octave/
+master_sites        ftp://ftp.gnu.org/pub/gnu/octave/
+
+use_bzip2           no
+checksums           md5     aace2cda51dd247e5ad850b5533700e2 \
+                    sha1    579048eca029f6207be02b753cc0d531e58ed031 \
+                    rmd160  342ee710b27ba6754a4863cdcfbd63c3159593a5
+
+depends_build       port:gawk \
+                    port:gsed \
+                    path:bin/perl:perl5 \
+                    port:texinfo
+
+depends_lib         port:arpack \
+                    port:curl \
+                    port:fftw-3 \
+                    port:fftw-3-single \
+                    port:fltk \
+                    port:ftgl \
+                    port:ghostscript \
+                    port:glpk \
+                    port:GraphicsMagick \
+                    port:gnuplot \
+                    port:hdf5-18 \
+                    port:metis \
+                    port:ncurses \
+                    port:pcre \
+                    port:readline \
+                    port:qhull \
+                    port:qrupdate \
+                    port:SuiteSparse
+
+configure.args      --enable-shared \
+                    --enable-dl \
+                    --with-hdf5 \
+                    --with-fftw \
+                    --with-blas="-framework Accelerate" \
+                    --enable-static \
+                    --enable-readline \
+                    --with-zlib \
+                    --with-glpk \
+                    --with-curl \
+                    --with-lapack \
+                    --with-umfpack \
+                    --with-colamd \
+                    --with-ccolamd \
+                    --with-cholmod \
+                    --with-cxsparse
+
+configure.perl      ${prefix}/bin/perl
+configure.python    ' '
+configure.awk       ${prefix}/bin/gawk
+
+configure.env-append SED="${prefix}/bin/gsed" \
+                    MAKEINFO="${prefix}/bin/makeinfo" \
+                    TEXI2DVI="${prefix}/bin/texi2dvi" \
+                    TEXI2PDF="${prefix}/bin/texi2pdf"
+
+use_parallel_build  yes
+
+test.run            yes
+test.target         check
+
+variant gcc43 description {build with the macports gcc43 toolchain} conflicts gcc44 g95 {
+    depends_build-append    port:gcc43
+    configure.compiler      macports-gcc-4.3
+}
+
+variant gcc44 description {build with the macports gcc44 toolchain} conflicts gcc43 g95 {
+    depends_build-append    port:gcc44
+    configure.compiler      macports-gcc-4.4
+}
+
+variant g95 description {build with g95} conflicts gcc43 gcc44 {
+    depends_build-append    port:g95
+    configure.f77       "${prefix}/bin/g95"
+}
+
+if { ![variant_isset gcc43] && ![variant_isset gcc44] && ![variant_isset g95] } {
+    default_variants +gcc43
+}
+
+post-patch {
+    reinplace "s|-lcholmod|-lcholmod -lmetis|g" ${worksrcpath}/configure
+}
+
+livecheck.check     regex
+livecheck.url       http://www.gnu.org/software/octave/news.html
+livecheck.regex     Version (\\d+(\\.\\d+)*)

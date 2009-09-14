@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53262 2009-07-02 03:33:23Z devans@macports.org $
+
+PortSystem 1.0
+
+name		file-roller
+version		2.26.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	An archive manager for GNOME
+long_description        File Roller is an archive manager for the GNOME \
+			environment. Archive manager means that you can: \
+			* Create and modify archives.  \
+			* View the content of an archive.  \
+			* View a file contained in the archive.  \
+			* Extract files from the archive.
+maintainers	devans openmaintainer
+categories	gnome
+platforms	darwin
+homepage	http://fileroller.sourceforge.net/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     1876e9807a12c37f9bb2d00807905755 \
+                sha1    92760312c9dddec695851170c289f692c2521176 \
+                rmd160  4c8cb579c4849a6cdc92250df5b447f575be76a6
+
+patchfiles      patch-src-fr-enum-types.c.diff
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:p5-xml-parser \
+                port:gnome-doc-utils
+
+depends_lib     port:gconf \
+	        port:nautilus
+
+use_bzip2 	yes
+
+configure.args  --mandir=${prefix}/share/man \
+                --disable-schemas-install \
+                --disable-scrollkeeper
+
+post-activate {
+	system "${prefix}/bin/scrollkeeper-update"
+        system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+            gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

@@ -1,0 +1,26 @@
+# $Id: Portfile 54627 2009-07-30 14:10:49Z gwright@macports.org $
+
+PortSystem 1.0
+
+name		modglue
+version		1.13
+categories	devel
+platforms	darwin
+maintainers	gwright
+description	A Plan9-inspired extension of the Unix pipe concept
+long_description \
+	Modglue is a combination of several software tools that		\
+	assist in writing and running programs connected to each other	\
+	using standard Unix pipes.
+
+homepage	http://www.aei.mpg.de/~peekas/cadabra/
+master_sites	${homepage}
+
+checksums	md5     8723d0332e51832c0e2e803b365d0fbf		\
+		sha1    a9c839653fb5e654360104bdc9d9f20afb4ae78b	\
+		rmd160  f493e49d6d80bb9dbc418db6b079958708a01c69
+
+depends_lib	port:libsigcxx2
+
+patchfiles	patch-Makefile.in.diff
+

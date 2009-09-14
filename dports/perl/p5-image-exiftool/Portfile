@@ -1,0 +1,20 @@
+# $Id: Portfile 54058 2009-07-20 00:15:14Z blb@macports.org $
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+perl5.setup         Image-ExifTool 7.82
+maintainers         nomaintainer
+description         Perl interface to EXIF metadata
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5     bf55d8d39deb6e0919632f8fdfe0b4f9 \
+                    sha1    fbf82ba79debd4ecf3922f44382607cbca136f93 \
+                    rmd160  299de6a9354c2b7f64714d0a86993c74f8fb54ec
+
+homepage            http://www.sno.phy.queensu.ca/~phil/exiftool/
+master_sites        ${homepage}
+
+depends_lib         port:p5-digest-md5 \
+                    port:p5-compress-zlib

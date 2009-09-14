@@ -1,0 +1,23 @@
+# $Id: Portfile 50980 2009-05-14 19:41:55Z and.damore@macports.org $
+
+PortSystem 1.0
+
+name		dos2unix
+version		3.1
+revision	1
+categories	textproc
+platforms	darwin
+maintainers	waqar
+description	Convert text between dos, unix, and mac formats
+long_description ${description}
+master_sites	http://fresh.t-systems-sfr.com/linux/src/
+homepage	${master_sites}
+checksums	md5 25ff56bab202de63ea6f6c211c416e96
+use_configure	no
+build		{
+		  system "cd ${worksrcpath} && ${configure.cc} ${configure.cflags} dos2unix.c -o dos2unix" }
+
+destroot	{
+		  system "install -m 755 -cs ${worksrcpath}/dos2unix ${destroot}${prefix}/bin"
+		  system "install -m 644 ${worksrcpath}/dos2unix.1 ${destroot}${prefix}/share/man/man1"
+		  system "ln -sf dos2unix ${destroot}${prefix}/bin/mac2unix" }

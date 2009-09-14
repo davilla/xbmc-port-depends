@@ -1,0 +1,41 @@
+# $Id: Portfile 54638 2009-07-30 17:26:45Z jberry@macports.org $
+
+PortSystem	1.0
+
+name				mrtg   
+version				2.16.2
+
+categories			net
+maintainers			ricci jberry
+platforms			darwin
+
+description			The multi-router traffic grapher
+long_description	MRTG is a tool to monitor the traffic load on network-links. \
+					It can also be used to gather and display a wide variety of time-series data.
+homepage			http://www.mrtg.org/
+					
+master_sites		http://oss.oetiker.ch/mrtg/pub/ \
+                    ftp://ftp.chg.ru/pub/networking/monitoring/mrtg/
+checksums           md5     06de09c0ee0d35a0142afed5b275b4cd \
+                    sha1    44f336c79e1418b59f5a25cb5cc03a82f983fdea \
+                    rmd160  2d60324f6c3bcd64fcd6b626ec6a36d4d3c92604
+
+depends_lib			port:gd2 \
+					port:libpng \
+					port:zlib
+
+configure.args		--mandir=${prefix}/share/man \
+					--with-gd=${prefix} \
+					--with-z=${prefix} \
+					--with-png=${prefix}
+
+post-destroot {
+	destroot.keepdirs \
+		${destroot}${prefix}/var/run \
+		${destroot}${prefix}/var/log \
+		${destroot}${prefix}/var/cache/mrtg
+		
+	reinplace s|"/var|"${prefix}/var| ${destroot}${prefix}/bin/mrtg
+	reinplace s|"/etc|"${prefix}/etc| ${destroot}${prefix}/bin/mrtg
+}
+

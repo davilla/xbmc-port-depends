@@ -1,0 +1,46 @@
+# $Id: Portfile 53732 2009-07-13 02:33:21Z jeremyhu@macports.org $
+
+PortSystem 1.0
+
+name            xorg-libXaw
+version         1.0.6
+categories      x11 devel
+maintainers     jeremyhu openmaintainer
+description     X.org libXaw
+homepage        http://www.x.org
+platforms       darwin macosx
+long_description Athena Widgets toolkit
+master_sites     http://xorg.freedesktop.org/archive/individual/lib/
+
+distname    libXaw-${version}
+checksums           md5     066218dceb82eb8da0e11d259ed3ceda \
+                    sha1    a9b5d14012416ffc9a792f4551c247b7f3232940 \
+                    rmd160  960faf45d9c7bceb5926fbc3eb28aaa5396be296
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig \
+		port:libtool \
+		port:autoconf \
+		port:automake \
+		port:xorg-util-macros
+
+depends_lib     port:xorg-libsm \
+                port:xorg-libXext \
+                port:xorg-libXmu \
+                port:xpm \
+                port:xorg-libXt
+
+use_autoreconf yes
+autoreconf.args -fvi
+
+# 1.7.x borks #20145
+configure.cppflags-append  {} 
+
+# Delete this, so it searches its own headers first rather than installed ones
+configure.cppflags-delete -I${prefix}/include
+
+livecheck.check regex
+livecheck.url   [lindex ${master_sites} 0]?C=M&O=D
+livecheck.regex libXaw-(\\d+(?:\\.\\d+)*)

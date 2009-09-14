@@ -1,0 +1,48 @@
+# $Id: Portfile 54783 2009-08-02 02:49:36Z toby@macports.org $
+
+PortSystem          1.0
+
+name                tesseract
+version             2.04
+categories          textproc graphics pdf
+maintainers         emer.net:emer
+description         Open source OCR engine
+long_description    The Tesseract OCR engine was one of the top 3 engines in \
+                    the 1995 UNLV Accuracy test. Between 1995 and 2006 it had \
+                    little work done on it, but it is probably one of the \
+                    most accurate open source OCR engines available. The \
+                    source code will read a binary, grey or color image and \
+                    output text. A tiff reader is built in that will read \
+                    uncompressed TIFF images, or libtiff can be added to read \
+                    compressed images.
+
+platforms           darwin
+homepage            http://code.google.com/p/tesseract-ocr/
+master_sites        http://tesseract-ocr.googlecode.com/files:src \
+                    http://tesseract-ocr.googlecode.com/files:langdata
+
+set lang_data       ${name}-2.00.eng${extract.suffix}
+
+distfiles \
+    ${distname}${extract.suffix}:src \
+    ${lang_data}:langdata
+
+checksums\
+    ${distname}${extract.suffix} \
+ 		md5     b44eba1a9f4892ac62e484c807fe0533 \
+		sha1    850c42c92a4471c5f41d4384c57045e812fde26a \
+	    rmd160  826718ddf491c8b925b02c343d4a4992fd4631d8 \
+    ${lang_data} \
+        md5     b8291d6b3a63ce7879d688e845e341a9 \
+		sha1    40292c8d206090c4ab342f6b7814ea41c075abce \
+		rmd160  4a8090729504c216b3988f189ea79a5a5e223173
+		
+post-extract {
+    foreach f [exec ls ${workpath}/tessdata/] {
+        copy ${workpath}/tessdata/${f} ${worksrcpath}/tessdata
+    }
+    delete ${workpath}/tessdata
+    delete ${worksrcpath}/java/makefile
+}
+
+depends_lib         port:tiff

@@ -1,0 +1,49 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 52724 2009-06-22 03:36:26Z devans@macports.org $
+
+PortSystem              1.0
+PortGroup               muniversal 1.0
+
+name                    libgsf
+version                 1.14.15
+set branch              [join [lrange [split $version .] 0 1] .]
+maintainers             nomaintainer
+categories              gnome
+platforms               darwin
+
+description \
+    An I/O abstraction library for dealing with file formats
+
+long_description \
+    libgsf aims to provide an efficient extensible \
+    i/o abstraction for dealing with different \
+    structured file formats.
+
+homepage                http://www.gnome.org/
+master_sites            gnome:sources/$name/$branch/
+
+use_bzip2               yes
+
+checksums               md5     5118e971b4257f50b6914404593f63cf \
+                        sha1    813f039274a08104da2eabb3074f59d254e96bed \
+                        rmd160  804601e912c75fb5f433a445cf19b55c70712144
+
+depends_build           port:pkgconfig \
+                        port:intltool \
+                        port:p5-xml-parser
+
+depends_lib             port:libbonobo \
+                        port:gnome-vfs
+
+configure.args          --without-python \
+                        --disable-schemas-install
+
+post-activate {
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule \
+            ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

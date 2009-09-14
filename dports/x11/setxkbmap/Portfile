@@ -1,0 +1,30 @@
+# $Id: Portfile 53580 2009-07-09 04:41:05Z jeremyhu@macports.org $
+
+PortSystem          1.0
+name                setxkbmap
+version             1.1.0
+categories          x11
+maintainers         blb openmaintainer
+description         Set the keyboard using the X11 keyboard extension
+long_description \
+   The setxkbmap command maps the keyboard to use the layout determined by \
+   the options specified on the command line.
+
+platforms           darwin
+
+homepage            http://www.x.org/
+master_sites        http://xorg.freedesktop.org/archive/individual/app
+use_bzip2           yes
+
+checksums           md5     2f902e0a89aaf2b19e06e7f26c6efb3a \
+                    sha1    f02f93a08ac060d760566693c748e0fba3db8a06 \
+                    rmd160  64e4dd18e952a194c5a2e9f370772f267e11e0e4
+
+depends_build       port:pkgconfig
+
+depends_lib         port:xorg-libxkbfile
+
+livecheck.check     regex
+livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
+livecheck.url       ${master_sites}
+

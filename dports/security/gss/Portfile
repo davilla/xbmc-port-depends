@@ -1,0 +1,49 @@
+# $Id: Portfile 53213 2009-07-01 08:02:09Z blb@macports.org $
+
+PortSystem          1.0
+name                gss
+version             0.1.1
+categories          security
+maintainers         nomaintainer
+description         GNU Generic Security Service Library
+long_description \
+   GSS is an implementation of the Generic Security Service Application \
+   Program Interface (GSS-API). GSS-API is used by network servers to \
+   provide security services, e.g., to authenticate SMTP/IMAP clients \
+   against SMTP/IMAP servers.
+
+platforms           darwin
+
+homepage            http://www.gnu.org/software/gss/
+master_sites        ftp://alpha.gnu.org/gnu/gss/ http://alpha.gnu.org/gnu/gss/
+checksums           md5     31182f19c24d2020c199964013179833 \
+                    sha1    34b69fe76de5c39ca0e0c2072030b67e83dbedc6 \
+                    rmd160  4e49270fe2efefd33b6b1806afb68a4befc1887b
+
+depends_build       port:pkgconfig
+
+depends_lib         port:libiconv
+
+set docdir          ${prefix}/share/doc/${name}-${version}
+
+configure.args      --docdir=${docdir} \
+                    --disable-kerberos5 \
+                    --with-libiconv-prefix=${prefix} \
+                    --disable-nls
+
+variant nls {
+   depends_lib-append      lib:libintl:gettext
+   configure.args-delete   --disable-nls
+   configure.args-append   --with-libintl-prefix=${prefix}
+}
+
+post-destroot {
+   xinstall -m 0755 -d ${destroot}${docdir}
+   xinstall -m 0644 -W ${worksrcpath}/doc gss.html gss.pdf gss.ps \
+      ${destroot}${docdir}
+}
+
+livecheck.check     regex
+livecheck.url       http://alpha.gnu.org/gnu/gss/
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}
+

@@ -1,0 +1,52 @@
+# $Id: Portfile 53368 2009-07-04 06:27:18Z blb@macports.org $
+
+PortSystem              1.0
+
+name                    zlib
+version                 1.2.3
+revision                2
+categories              archivers
+maintainers             landonf ryandesign openmaintainer
+homepage                http://www.zlib.net/
+platforms               darwin freebsd
+use_bzip2               yes
+
+description             zlib lossless data-compression library
+
+long_description        zlib is designed to be a free, general-purpose, \
+                        legally unencumbered, lossless data-compression \
+                        library for use on virtually any computer hardware \
+                        and operating system.
+
+master_sites            ${homepage} \
+                        http://www.gzip.org/zlib/
+
+checksums               md5     dee233bf288ee795ac96a98cc2e369b6 \
+                        sha1    967e280f284d02284b0cd8872a8e2e04bfdc7283 \
+                        rmd160  cfba9984b354dcc38da49331457e6bfc861c6f51
+
+patchfiles              patch-Makefile-static.diff patch-Makefile-test.diff \
+                        patch-configure.diff
+
+configure.args          --shared
+configure.universal_args
+
+use_parallel_build      yes
+
+test.run                yes
+
+destroot.destdir        prefix=${destroot}${prefix}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}-${version}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} ChangeLog FAQ README ${destroot}${docdir}
+    
+    set examplesdir ${docdir}/examples
+    xinstall -d ${destroot}${examplesdir}
+    eval xinstall -m 0644 [glob ${worksrcpath}/example{.c,s/*}] ${destroot}${examplesdir}
+}
+
+livecheck.check         regex
+livecheck.url           ${homepage}
+livecheck.regex         ${name}-(\[0-9.\]+)\\.tar

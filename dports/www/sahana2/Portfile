@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55858 2009-08-20 13:13:34Z snc@macports.org $
+
+PortSystem          1.0
+
+name                sahana2
+version             0.6.2.2
+categories          www php
+#license             LGPL
+maintainers         snc openmaintainer
+description         Sahana is a web based disaster management system
+long_description    Sahana is an integrated set of pluggable, web based \
+                    disaster management applications that provide solutions to \
+                    large-scale humanitarian problems in the aftermath of a \
+                    disaster.
+
+homepage            http://www.sahana.lk
+master_sites        sourceforge:sahana
+distname            sahana-${version}
+checksums           md5    1df2ecad5ea81b61d10a6f8b42d2e260 \
+                    sha1   7ed88b34c56364a67aeffb24743babdf1005946b \
+                    rmd160 31243deacdadcac825d911ae8c7c69852c41f331
+
+platforms           darwin freebsd
+
+depends_lib         port:apache2 port:php5 port:mysql5
+            
+variant apache description "Use Apache 1 instead of Apache 2" {
+    depends_lib-append  port:apache
+    depends_lib-delete  port:apache2
+}
+
+variant mysql4 description "Use MySQL 4 instead of MySQL 5" {
+    depends_lib-append  port:mysql4
+    depends_lib-delete  port:mysql5
+}
+
+use_configure   no
+build           {}
+
+set docpath ${destroot}${prefix}/www/data
+set worksrcpath ${workpath}/sahana
+
+destroot {
+    xinstall -d -m 0755 ${docpath}/sahana
+    eval file copy [glob ${worksrcpath}/*] ${docpath}/sahana
+    file attributes ${docpath}/sahana/www/tmp -permissions 040777
+}
+
+livecheck.check     regex
+livecheck.url       http://sourceforge.net/api/file/index/project-id/127855/rss?path=/Sahana
+livecheck.regex     sahana-(\\d+\\.\\d+\\.\\d+(\\.\\d+)?)

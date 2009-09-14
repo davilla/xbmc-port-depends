@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54511 2009-07-28 22:45:19Z arthurk@macports.org $
+
+PortSystem          1.0
+PortGroup           python26 1.0
+
+name                py26-fabric
+version             0.9b1
+platforms           darwin
+maintainers         arthurk openmaintainer
+homepage            http://fabfile.org/
+description         Fabric is a simple pythonic remote deployment tool.
+long_description    It is designed to upload files to, and run shell commands \
+                    on, a number of servers in parallel or serially. These \
+                    commands are grouped in tasks (regular python functions) \
+                    and specified in a 'fabfile'. \
+                    \
+                    It is a bit like a dumbed down Capistrano, except it's in \
+                    Python, dosn't expect you to be deploying Rails \
+                    applications, and the 'put' command works. \
+                    \
+                    Unlike Capistrano, Fabric want's to stay small, light, \
+                    easy to change and not bound to any specific framework.
+
+master_sites        http://git.fabfile.org/cgit.cgi/fabric/snapshot/
+distname            fabric-${version}
+use_zip             yes
+checksums           md5     2f1b02a6d082c6af6b16a6b56a1a00c5 \
+                    sha1    aca71d1a75a1f850a45297ed2eb8c745bc2bb3c2 \
+                    rmd160  9a9164049bb53814e304942eebe50cc08f73513b
+
+depends_lib-append  port:py26-setuptools \
+                    port:py26-paramiko
+
+post-destroot {
+    ln -s ${python.prefix}/bin/fab \
+        ${destroot}${prefix}/bin/fab-${python.branch}
+}
+
+livecheck.check     regex
+livecheck.url       http://git.fabfile.org/cgit.cgi/fabric/
+livecheck.regex     fabric-(0\.\[0-9\]+\.\[0-9\]+)

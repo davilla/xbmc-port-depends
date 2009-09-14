@@ -1,0 +1,54 @@
+# $Id: Portfile 55666 2009-08-16 16:46:24Z blair@macports.org $
+
+PortSystem 1.0
+
+name			spring-framework3
+version			3.0.0
+revision		1
+
+categories		java
+maintainers		blair
+platforms		darwin
+
+description		Spring application framework for Java
+long_description	Spring is a layered Java/J2EE application framework.
+homepage		http://www.springsource.org/about
+
+distname		spring-framework-${version}.M4-with-docs
+master_sites		http://s3.amazonaws.com/dist.springframework.org/milestone/SPR
+checksums		md5 3294ae426a76b88740482bab89c8fa7d \
+			sha1 511cd7abb914002bbf6096e0bcb9526f7a6c3c9c \
+			rmd160 3b957dd1686d3960f2e7f0ae0649a2f95cf4c091
+
+use_zip			yes
+
+depends_lib		bin:java:kaffe
+
+use_configure		no
+
+worksrcdir		spring-framework-${version}.M4
+
+build.cmd		true
+
+destroot {
+	# Ensure needed directories
+	xinstall -m 755 -d ${destroot}${prefix}/share \
+		${destroot}${prefix}/share/doc/${name} \
+		${destroot}${prefix}/share/examples
+
+	# Install the framework
+	file copy ${worksrcpath}/dist ${destroot}${prefix}/share/java
+	foreach f [glob ${destroot}${prefix}/share/java/*.jar] {
+		file rename ${f} [strsed ${f} {s/-3.0.0.M4//}]
+	}
+
+	# Install the docs
+	foreach f {changelog.txt license.txt notice.txt readme.txt} {
+		file copy ${worksrcpath}/${f} \
+			${destroot}${prefix}/share/doc/${name}/${f}
+	}
+	file copy ${worksrcpath}/docs/javadoc-api \
+		${destroot}${prefix}/share/doc/${name}/api
+	file copy ${worksrcpath}/docs/spring-framework-reference \
+		${destroot}${prefix}/share/doc/${name}/reference
+}

@@ -1,0 +1,36 @@
+# $Id: Portfile 50461 2009-05-01 07:49:32Z toby@macports.org $
+
+PortSystem 1.0
+PortGroup xcode 1.0
+
+name		iTerm
+version		0.9.6
+set svntag	RC_[strsed $version {g/\./_/}]
+categories	aqua shells
+maintainers	waqar
+description	Enhanced terminal emulator program for Mac OS X
+long_description	\
+	iTerm is a full featured terminal emulation program written 	\
+	for OS X using Cocoa. We are aiming at providing users with 	\
+	best command line experience under OS X. The letter i 		\
+	represents a native Apple look and feel of the program 		\
+	interface, and an emphasis on complete international support. 
+
+homepage	http://iterm.sourceforge.net
+
+fetch.type	svn
+svn.url		http://iterm.svn.sourceforge.net/svnroot/iterm/tags/$svntag/
+worksrcdir	${svntag}
+
+xcode.project	${name}.xcodeproj
+xcode.target	${name}
+
+# Remove this after MacPorts 1.7.1 is released
+pre-destroot {
+	xinstall -d -m 755 ${destroot}${applications_dir}
+}
+
+destroot {
+	file copy ${build.dir}/build/Deployment/${name}.app \
+		${destroot}${applications_dir}/${name}.app
+}

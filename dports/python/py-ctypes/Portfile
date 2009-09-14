@@ -1,0 +1,33 @@
+# $Id: Portfile 50284 2009-04-28 18:57:26Z jmr@macports.org $
+
+PortSystem 1.0
+PortGroup python24 1.0
+
+name			py-ctypes
+version			1.0.1
+categories		python
+platforms		darwin
+maintainers		nomaintainer
+description		create and manipulate C data types in Python
+long_description	ctypes is a Python package to create and manipulate C \
+				data types in Python, and to call functions in dynamic \
+				link libraries/shared dlls. It allows wrapping these \
+				libraries in pure Python.
+
+homepage		http://starship.python.net/crew/theller/ctypes/
+master_sites	sourceforge:ctypes
+checksums		sha1 a723fa162c6bd9f58fc51babcad8ff3154f37a3a
+distname		ctypes-${version}
+
+depends_lib-append	port:libffi
+
+build.env	CC=${configure.cc} CPP=${configure.cpp}
+
+test.run		yes
+test.cmd		${build.cmd}
+test.target		test
+
+post-destroot {
+	xinstall -m 644 -W ${worksrcpath} LICENSE.txt README.CVS \
+		README.txt ${destroot}${prefix}/share/doc/${name}
+}

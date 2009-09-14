@@ -1,0 +1,31 @@
+# $Id: Portfile 54724 2009-08-01 01:36:39Z snc@macports.org $
+
+PortSystem 1.0
+
+name            xorg-libXxf86dga
+version         1.0.2
+revision		1
+categories      x11 devel
+maintainers     jeremyhu openmaintainer
+description     X.org libXxf86dga
+homepage        http://www.x.org
+platforms       darwin macosx
+long_description ${description}
+master_sites     ${homepage}/pub/individual/lib/
+
+distname    libXxf86dga-${version}
+checksums           md5     6f5f621804ee652b6cc6f2025c517c78 \
+                    sha1    7bf4fff1e981357509e3a962e9040f243001088e \
+                    rmd160  deefcf435aee9e75a5f5b6dec1f7094246c79a67
+
+use_bzip2   yes
+use_parallel_build      yes
+
+depends_build   port:pkgconfig
+
+depends_lib     port:xorg-libXext \
+                port:xorg-xf86dgaproto
+
+livecheck.check regex
+livecheck.url   [lindex ${master_sites} 0]?C=M&O=D
+livecheck.regex libXxf86dga-(\\d+(?:\\.\\d+)*)

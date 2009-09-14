@@ -1,0 +1,35 @@
+# $Id: Portfile 52020 2009-06-08 08:43:39Z ryandesign@macports.org $
+
+PortSystem 1.0
+
+name			mldonkey
+version			3.0.0
+categories		net
+maintainers		kallisys.net:pguyot
+description		OCaml/GTK client for the eDonkey p2p network
+long_description	\
+				MLdonkey is a multi-platform multi-network peer-to-peer \
+				client. It supports several large networks, such as eDonkey, Overnet, Bittorrent, Gnutella (Bearshare, Limewire, etc), \
+				Gnutella2 (Shareaza), Fasttrack (Kazaa, Imesh, Grobster), \
+				Soulseek, Direct-Connect, and Opennap. Networks can be \
+				enabled/disabled, searches are performed in parallel on all \
+				enabled networks, but each file is only downloaded from one \
+				network, but from multiple clients concurrently.
+homepage		http://mldonkey.sourceforge.net/
+platforms		darwin
+master_sites	sourceforge
+checksums		md5     d45b37f334a4008ed15343dfb2caf453 \
+				sha1    8d3f1808578bb145655050c0224f512afe0266b5 \
+				rmd160  c53efda6b513bbfd2dcd71804600b0906252e463
+
+use_bzip2		yes
+depends_lib		port:ocaml \
+				port:lablgtk \
+				port:expat \
+				port:fontconfig \
+				port:freetype \
+				port:gd2 \
+				port:jpeg \
+				port:libiconv \
+				port:libpng
+configure.cc	gcc

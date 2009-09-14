@@ -1,0 +1,35 @@
+# $Id: Portfile 54358 2009-07-25 10:15:06Z toby@macports.org $
+
+PortSystem              1.0
+
+name                    gawk
+version                 3.1.7
+categories              lang
+maintainers             gmail.com:mschamschula openmaintainer
+platforms               darwin
+master_sites            gnu
+homepage                http://www.gnu.org/software/gawk/
+description             The GNU awk utility.
+use_bzip2               yes
+use_parallel_build      yes
+
+long_description \
+    The awk utility interprets a special-purpose programming language   \
+    that makes it possible to handle simple data-reformatting jobs with \
+    just a few lines of code. It is a free, extended version of awk.
+
+checksums               md5 674cc5875714315c490b26293d36dfcf \
+                        sha1 77dfacb793d579fa6830152d943096bc4362a465 \
+                        rmd160 f35c04e947357404d410d62df87df9d6a88079de
+
+depends_lib             port:libiconv \
+                        port:gettext
+
+configure.args          --with-libiconv-prefix=${prefix}
+
+test.run                yes
+test.target             check
+
+post-destroot {
+    delete ${destroot}${prefix}/bin/awk
+}

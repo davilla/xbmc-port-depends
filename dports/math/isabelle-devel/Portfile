@@ -1,0 +1,55 @@
+# $Id: Portfile 55833 2009-08-20 05:57:52Z mww@macports.org $
+
+PortSystem 1.0
+
+name			isabelle-devel
+version			2009-08-19
+set my_version		[clock format [clock scan ${version}] -format %d-%b-%Y]
+categories		math lang ml
+platforms		darwin
+maintainers		mww
+description		Isabelle is a popular generic theorem proving environment
+long_description	Isabelle is a generic proof assistant. It allows mathematical \
+			formulas to be expressed in a formal language and provides \
+			tools for proving those formulas in a logical calculus. The \
+			main application is the formalization of mathematical proofs \
+			and in particular formal verification, which includes proving \
+			the correctness of computer hardware or software and proving \
+			properties of computer languages and protocols. \
+			This version is a development snapshot of the upcoming 2008 release.
+
+homepage		http://isabelle.in.tum.de/
+master_sites		${homepage}/devel/
+distname		Isabelle_${my_version}
+checksums           md5     19184bc7620a92c3d13b439de6722767 \
+                    sha1    7adfffc38bd599c11ce2e34dae64515d458b92e8 \
+                    rmd160  5eb4602750c8aafad4ab6e80074f3e2a34802c6e
+patchfiles		patch-etc-settings.diff
+
+depends_lib		port:polyml
+
+post-extract {
+    file rename ${worksrcpath}/doc ${workpath}/doc
+    system "cd ${worksrcpath} && mv ANNOUNCE CONTRIBUTORS COPYRIGHT NEWS README ${workpath}/doc"
+}
+
+configure {
+    reinplace "s|@prefix@|${prefix}|g" ${worksrcpath}/etc/settings
+}
+
+build {
+    system "cd ${workpath}/${worksrcdir} && ./build -a -b"
+}
+
+destroot {
+    file copy ${worksrcpath} ${destroot}${prefix}/lib/${name}
+    system "${destroot}${prefix}/lib/${name}/bin/isabelle install -p ${destroot}${prefix}/bin -d ${prefix}/lib/${name}"
+    xinstall -d ${destroot}${prefix}/share/doc/
+    file copy ${workpath}/doc ${destroot}${prefix}/share/doc/${name}-${version}
+}
+
+livecheck.check	regex
+livecheck.url	${homepage}/devel/
+livecheck.version	${my_version}
+livecheck.regex		(\[0-9\]+-\[a-zA-Z\]+-200\[7-9\])\\.tar\\.gz
+

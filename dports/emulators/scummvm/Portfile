@@ -1,0 +1,39 @@
+# $Id: Portfile 50409 2009-04-30 14:30:00Z mww@macports.org $
+
+PortSystem 1.0
+
+name		scummvm
+version		0.13.1
+platforms       darwin
+categories	emulators games
+maintainers	mww openmaintainer
+description	cross-platform interpreter for several adventure engines
+long_description	ScummVM is a cross-platform interpreter for several \
+			point-and-click adventure engines. This includes all \
+			SCUMM-based adventures by LucasArts, Simon the \
+			Sorcerer by AdventureSoft, and Beneath a Steel Sky and \
+			Broken Sword 2 by Revolution
+
+homepage	http://scummvm.org/
+master_sites	sourceforge
+use_bzip2	yes
+checksums           md5     843d9cd4470022bd3b269eb84298dc16 \
+                    sha1    7cb5d8e34b33ddb990daa6c9cfd1cd88613c74d6 \
+                    rmd160  7d5fa227f238f2cbe0997281513ad0dee89fcf5e
+depends_lib	port:libsdl \
+		port:libmad \
+		port:libogg \
+		port:libvorbis \
+		port:libmpeg2 \
+		port:flac
+
+configure.args	--with-ogg-prefix=${prefix} \
+		--with-vorbis-prefix=${prefix} \
+		--with-mad-prefix=${prefix} \
+		--with-zlib-prefix=${prefix} \
+		--with-flac-prefix=${prefix} \
+		--with-sdl-prefix=${prefix}
+#build.target	bundle
+build.args	OSXOPT=${prefix}
+
+destroot.args	INSTALL=/usr/bin/install

@@ -1,0 +1,20 @@
+# $Id: Portfile 56208 2009-08-25 09:14:00Z ryandesign@macports.org $
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+perl5.setup         Tk 804.028
+revision            1
+maintainers         nomaintainer
+description         p5-tk is a Perl interface to Tk
+long_description    ${description}
+
+platforms           darwin
+
+checksums           md5 7153c1c411b0dd005a0660179e5c5900
+
+depends_lib-append  port:tk port:p5-term-readkey
+
+# Work around issue with newer X libraries, see 
+# http://rt.cpan.org/Public/Bug/Display.html?id=38746
+patchfiles          patch-pTk_mTk_generic_tk.h.diff
+

@@ -1,0 +1,66 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53639 2009-07-10 20:54:20Z snc@macports.org $
+
+PortSystem          1.0
+
+name                finch
+version             2.5.8
+revision            1
+categories          net
+platforms           darwin
+maintainers         simon openmaintainer
+description         Multi-protocol Instant Messaging client
+long_description    Pidgin is an Open Source clone of America OnLine's \
+                    Instant Messenger client that uses GTK+ version 2.  It \
+                    features multiple groups, group chat, user information \
+                    fetching and registration, time stamping, and more.  It \
+                    also supports other IM protocols, including Yahoo!, MSN, \
+                    ICQ, Jabber, Napster, IRC, and Zephyr via included \
+                    plugins.
+
+homepage            http://www.pidgin.im/
+master_sites        sourceforge:pidgin
+checksums           md5     c207407dca71c6357c82135875e472f0 \
+                    sha1    672f7e16c429c210f33f2499520c436db4e2384c \
+                    rmd160  b13108331a3da1639f30a76984c3c09529b7d5aa
+
+distname            pidgin-${version}
+use_bzip2           yes
+
+depends_lib         port:audiofile \
+                    port:libao \
+                    port:libxml2 \
+                    port:nspr \
+                    port:nss \
+                    port:p5-xml-parser \
+                    port:glib2 \
+                    port:intltool
+
+patchfiles          patch-finch_libgnt_Makefile.in.diff
+
+configure.args      --disable-avahi \
+                    --disable-gtkui \
+                    --disable-dbus \
+                    --disable-gstreamer \
+                    --disable-gtkspell \
+                    --disable-meanwhile \
+                    --disable-nm \
+                    --disable-screensaver \
+                    --disable-sm \
+                    --disable-startup-notification \
+                    --enable-nss \
+                    --mandir=${prefix}/share/man \
+                    --with-nspr-includes=${prefix}/include/nspr \
+                    --with-nspr-libs=${prefix}/lib/nspr \
+                    --with-nss-includes=${prefix}/include/nss \
+                    --with-nss-libs=${prefix}/lib/nss \
+                    --without-x
+configure.ldflags-append    -bind_at_load
+configure.cppflags-append   -no-cpp-precomp
+
+post-build {
+    # Don't install perllocal.pod as it collides with other ports.
+    system "cd ${worksrcpath}; patch -p0 < ${filespath}/patch-perllocal.pod.diff"
+}
+
+livecheck.distname  Pidgin

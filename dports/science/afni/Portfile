@@ -1,0 +1,90 @@
+# $Id: Portfile 53933 2009-07-16 18:20:03Z jmr@macports.org $
+PortSystem	1.0
+name		afni
+version		2007.04.18.1830
+distfiles	afni_src.tgz afni.1 \
+                TTatlas+tlrc.BRIK.gz TTatlas+tlrc.HEAD CA_EZ_v1.3c-May0806.tgz \
+		openMotif-2.2.3.tar.gz
+categories	science
+platforms	darwin
+maintainers	smithers.neuro.mcw.edu:bacon
+description	Analysis of Functional Neuro Images
+long_description	This is a port of AFNI, Advanced Functional Neuro Imaging.  AFNI is a tool for analyzing 3 dimensional images, especially functional MRI images used in brain mapping research.
+homepage	http://afni.nimh.nih.gov/
+master_sites	http://www.neuro.mcw.edu/~bacon/Ports/distfiles/AFNI/${version}/
+checksums	afni_src.tgz md5 90ecae8727cadc6172517bc7149be67e \
+		afni.1 md5 80cc1f1c6ca0ef59a3032ad63abfbdd5 \
+		TTatlas+tlrc.BRIK.gz md5 f5a107b049bc426af5342565f4e5beee \
+		TTatlas+tlrc.HEAD md5 a0ca787a2996d7e66548176808503ac5 \
+		CA_EZ_v1.3c-May0806.tgz md5 dbb2caab5c030c505b306e1526d19150 \
+		openMotif-2.2.3.tar.gz md5 94c96a0f94ee0d5e41d3dba2188b263d
+extract.only	afni_src.tgz CA_EZ_v1.3c-May0806.tgz \
+		openMotif-2.2.3.tar.gz
+use_configure	no
+depends_lib	port:glib2
+depends_run	port:netpbm \
+		port:jpeg \
+		port:whirlgif \
+		port:endian
+build.dir	${workpath}/afni_src
+build.target	vastness
+
+platform powerpc {
+post-patch      {
+                file copy ${filespath}/Makefile.ppc \
+			${workpath}/afni_src/Makefile
+		reinplace "s|openMotif-2.2.3|${workpath}/openMotif-2.2.3|g" ${workpath}/afni_src/Makefile
+}
+}
+
+platform i386 {
+post-patch      {
+                file copy ${filespath}/Makefile.i386 \
+			${workpath}/afni_src/Makefile
+		reinplace "s|openMotif-2.2.3|${workpath}/openMotif-2.2.3|g" ${workpath}/afni_src/Makefile
+}
+}
+
+pre-build	{
+		system "cd ${workpath}/openMotif-2.2.3 && ./configure --disable-shared --enable-static --disable-demos"
+		system "cd ${workpath}/openMotif-2.2.3 && make"
+		}
+
+destroot {
+# First, separate files that were all dumped into macosx_bin by the Makefile
+		file mkdir ${workpath}/afni_src/macosx_lib
+		eval file rename [glob -directory ${workpath}/afni_src macosx_bin/*.a] ${workpath}/afni_src/macosx_lib
+		eval file rename [glob -directory ${workpath}/afni_src macosx_bin/*.so] ${workpath}/afni_src/macosx_lib
+		file mkdir ${workpath}/afni_src/macosx_include
+		eval file rename [glob -directory ${workpath}/afni_src macosx_bin/*.h] ${workpath}/afni_src/macosx_include
+		file mkdir ${workpath}/afni_src/macosx_share
+		eval file rename [glob -directory ${workpath}/afni_src macosx_bin/*.jpg] ${workpath}/afni_src/macosx_share
+		eval file rename [glob -directory ${workpath}/afni_src macosx_bin/*.txt] ${workpath}/afni_src/macosx_share
+
+# Delete files that conflict with other ports
+		eval file delete ${workpath}/afni_src/macosx_bin/cjpeg ${workpath}/afni_src/macosx_bin/djpeg \
+			${workpath}/afni_src/macosx_bin/whirlgif
+
+# Install binaries and scripts
+		xinstall -d -m 755 ${destroot}${prefix}/bin
+		eval xinstall -m 755 [glob -directory ${workpath}/afni_src macosx_bin/*] ${destroot}${prefix}/bin
+# Install libraries and plugins
+		xinstall -d -m 755 ${destroot}${prefix}/lib/afni
+		eval xinstall -m 644 [glob -directory ${workpath}/afni_src macosx_lib/*] ${destroot}${prefix}/lib/afni
+# Install headers
+		xinstall -d -m 755 ${destroot}${prefix}/include/afni
+		eval xinstall -m 644 [glob -directory ${workpath}/afni_src macosx_include/*] ${destroot}${prefix}/include/afni
+
+# Install miscellaneous files
+		xinstall -d -m 755 ${destroot}${prefix}/share/afni
+		eval xinstall -m 644 [glob -directory ${workpath}/afni_src macosx_share/*] ${destroot}${prefix}/share/afni
+		eval xinstall -m 644 [glob ${distpath}/TTatlas*] ${destroot}${prefix}/share/afni
+		eval xinstall -m 644 [glob -directory ${workpath} CA_EZ_v1.3c-May0806/*] ${destroot}${prefix}/share/afni
+
+# Install docs
+		xinstall -d -m 755 ${destroot}${prefix}/share/doc/afni
+		eval xinstall -m 644 [glob -directory ${workpath} afni_src/README.*] ${destroot}${prefix}/share/doc/afni
+		xinstall -d -m 755 ${destroot}${prefix}/man/man1
+		eval xinstall -m 644 ${distpath}/afni.1 ${destroot}${prefix}/man/man1
+		reinplace "s|%%PREFIX%%|${prefix}|g" ${destroot}${prefix}/man/man1/afni.1
+}

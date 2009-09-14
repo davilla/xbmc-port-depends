@@ -1,0 +1,41 @@
+# $Id: Portfile 51246 2009-05-21 18:37:13Z and.damore@macports.org $
+PortSystem      1.0
+name            wxd
+version         0.14
+maintainers     yc5.so-net.ne.jp:usami-k
+platforms       darwin
+categories      devel
+description     wxWidgets bindings for the D programming language
+long_description \
+                wxD is wxWidgets bindings for the D programming language.
+homepage        http://wxd.sourceforge.net/
+master_sites    sourceforge:wxd
+extract.suffix  .tgz
+checksums       md5 414acdf06c09a36d50a82e4a2b9acef8 \
+                sha1 21f72c36f6f19353c96f91787c4cf2fd6ffa9e28 \
+                rmd160 394b15074ff562d9fe8ef42b80f545abeb659aed
+worksrcdir      ${name}
+depends_lib     bin:gdc:gdc \
+                port:wxWidgets
+
+use_configure   no
+
+destroot.destdir DESTDIR=${destroot} PREFIX=${prefix}
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+    foreach f {COPYING.LIB LICENCE.txt README.txt} {
+        xinstall -m 644 ${worksrcpath}/${f} ${destroot}${prefix}/share/doc/${name}
+    }
+    copy ${worksrcpath}/Configs ${destroot}${prefix}/share/doc/${name}
+    copy ${worksrcpath}/Samples ${destroot}${prefix}/share/doc/${name}
+}
+
+universal_variant   no
+
+variant with_doxygen description {Include documentations by doxygen} {
+    depends_build   port:doxygen
+    build.target-append docs
+    post-destroot {
+        copy ${worksrcpath}/html ${destroot}${prefix}/share/doc/${name}
+    }
+}

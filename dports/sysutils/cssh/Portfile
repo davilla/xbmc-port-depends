@@ -1,0 +1,27 @@
+# $Id: Portfile 56064 2009-08-24 00:47:13Z ryandesign@macports.org $
+
+PortSystem 1.0
+
+name			cssh
+version			3.22
+
+platforms		darwin
+categories		sysutils
+maintainers		stechert openmaintainer
+homepage		http://clusterssh.sourceforge.net/
+description		Cluster Admin via SSH
+long_description  \
+    ClusterSSH controls a number of xterm windows via a single graphical \
+    console window to allow commands to be interactively run on multiple \
+    servers over an ssh connection.
+
+master_sites		http://downloads.sourceforge.net/clusterssh/
+checksums		md5 f568c3ade1e586250ff22045a11eff37 \
+			sha1 0927f870459354450f5cdbb4aeaf7ceb12b97f6e \
+			rmd160 73c099872a53a5d8ed993fafe60fc7b7586fd83c
+
+
+distname		clusterssh-${version}
+
+depends_lib		port:p5-tk port:p5-x11-protocol
+depends_run		port:xterm

@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53941 2009-07-16 20:31:18Z toby@macports.org $
+
+PortSystem          1.0
+
+name                facter
+version             1.5.6
+categories          sysutils
+maintainers         explanatorygap.net:nigel openmaintainer
+
+description         A cross-platform library for describing OS attributes.
+
+long_description    A cross-platform library for describing OS attributes. \
+                    Supports multiple resolution mechanisms, any of which \
+                    can  be restricted to working only on certain operating \
+                    systems or environments. Facter is especially useful for \
+                    retrieving things like operating system names, \
+                    IP  addresses, MAC addresses, and SSH keys.
+                    
+homepage            http://reductivelabs.com/products/facter/
+platforms           darwin
+
+master_sites        http://reductivelabs.com/downloads/facter/
+
+checksums           md5     f2eda650cadfdaf549fab1a436c0db4d \
+                    sha1    a48d7e6e86199db16a647343e0dc05e143f00db4 \
+                    rmd160  c0dbe660aae09758290230b6264d2ee18a072fef
+
+depends_lib         port:ruby
+
+use_configure       no
+build               {}
+test.run            no
+destroot.cmd        ${prefix}/bin/ruby ${worksrcpath}/install.rb \
+                    --destdir=${destroot}
