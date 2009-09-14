@@ -1,0 +1,40 @@
+# $Id: Portfile 54437 2009-07-27 18:06:28Z toby@macports.org $
+
+PortSystem	1.0
+
+name		roboctl
+version		0.3.6
+categories	devel
+platforms	darwin
+maintainers	tds.net:jwbacon
+
+description	Communication tools for Lego and VEX robots
+long_description	Tools for communicating with and controlling Lego \
+			Mindstorms and VEX robotics controllers.
+
+homepage	http://personalpages.tds.net/~jwbacon/Ports
+master_sites	http://personalpages.tds.net/~jwbacon/Ports/distfiles/ \
+		http://jbacon.dyndns.org/~bacon/Ports/distfiles/
+
+checksums	md5 1a9e5d45367359fbcbd16370f29ae899 \
+		sha1 17e2bbbcd4189c9baf4b212b8f6c2d98423a2b91 \
+		rmd160 136c6c532a860321bd2b0341b32a504660cd2ff6
+
+use_configure	no
+
+depends_lib	port:libusb-compat
+
+destroot.destdir	PREFIX=${destroot}${prefix}
+build.cmd	"make depend && make"
+build.args	"LOCALBASE=${prefix} PREFIX=${prefix} MANPREFIX=${prefix}/share"
+destroot.args	"MANPREFIX=${prefix}/share"
+post-patch {
+	if {${os.major} >= 9} {
+		reinplace "s|echo -e|echo|g" \
+			${worksrcpath}/Commands/Legoctl/Makefile \
+			${worksrcpath}/Commands/Vexctl/Makefile \
+			${worksrcpath}/Libs/C/Makefile
+	}
+}
+
+use_parallel_build no

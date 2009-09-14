@@ -1,0 +1,33 @@
+# $Id: Portfile 53738 2009-07-13 04:22:33Z toby@macports.org $
+
+PortSystem 1.0
+
+name             tmux
+version          0.9
+categories       sysutils
+maintainers      toby
+description      terminal multiplexer
+long_description \
+	tmux is a \"terminal multiplexer\", it enables a number of terminals \
+	(or windows) to be accessed and controlled from a single terminal. \
+	tmux is intended to be a simple, modern, BSD-licensed alternative \
+	to programs such as GNU screen.
+homepage         http://sourceforge.net/projects/tmux/
+platforms        darwin
+master_sites     sourceforge
+checksums        md5 2d1df646a6977bb7d9b20e53770d5593 \
+                 sha1 b00283291b642c8db654bee78fcf5453ba248c66 \
+                 rmd160 9847514485d2ad0f948def777fa8a2abd99cf34b
+
+depends_lib      port:ncurses
+
+patchfiles       GNUmakefile.diff
+
+post-configure {
+	reinplace "s|__PREFIX__|${prefix}|g" "${worksrcpath}/GNUmakefile"
+	reinplace "s|__CC__|${configure.cc}|" "${worksrcpath}/GNUmakefile"
+	reinplace "s|__CFLAGS__|${configure.cflags}|" "${worksrcpath}/GNUmakefile"
+	reinplace "s|__LDFLAGS__|${configure.ldflags}|" "${worksrcpath}/GNUmakefile"
+}
+
+livecheck.regex  tmux tmux-(\[^ \]+) released

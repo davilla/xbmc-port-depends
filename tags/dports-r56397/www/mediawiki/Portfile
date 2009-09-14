@@ -1,0 +1,82 @@
+# $Id: Portfile 55736 2009-08-18 02:29:24Z blb@macports.org $
+
+PortSystem          1.0
+name                mediawiki
+version             1.15.1
+revision            1
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          www php
+maintainers         blb openmaintainer
+description         The wiki engine used by Wikipedia
+long_description \
+   MediaWiki is the collaborative editing software that runs Wikipedia, the \
+   free encyclopedia, and other projects. It's designed to handle a large \
+   number of users and pages without imposing too rigid a structure or \
+   workflow.
+
+platforms           darwin freebsd
+
+homepage            http://www.mediawiki.org
+master_sites        http://download.wikimedia.org/mediawiki/${branch}/
+
+checksums           md5     834cef60ef3fd47162420fa25abf2dff \
+                    sha1    bc6fa790b7738892c6b415fc76658a976763715d \
+                    rmd160  437c5337e524dc2e3e23ab9bf10fe10f3be5886a
+
+depends_run         port:libiconv port:jpeg port:jasper port:tiff port:lcms \
+                    port:libpng port:freetype port:libxml2 port:jbigkit \
+                    port:expat port:fontconfig port:ghostscript \
+                    port:ImageMagick port:pkgconfig port:aspell
+
+depends_lib         path:bin/php:php5 path:bin/mysql_config5:mysql5
+
+# Fix an outdated KHTML hack which affects newer WebKit
+# https://bugs.webkit.org/show_bug.cgi?id=28350
+patchfiles          patch-skins_common_wikibits.js.diff
+
+use_configure       no
+
+build               {}
+
+set docpath ${prefix}/www/data/${name}
+
+destroot {
+   xinstall -d -m 0755 ${destroot}${docpath}
+   eval file copy [glob ${worksrcpath}/*] ${destroot}${docpath}
+}
+
+post-activate {
+   ui_msg "MediaWiki has now been installed into ${docpath}"
+   ui_msg "Any further information on installation and configuration can"
+   ui_msg "be found at"
+   ui_msg "http://www.mediawiki.org/wiki/Manual:Installation_guide"
+   ui_msg ""
+   ui_msg "If you are upgrading, read"
+   ui_msg "http://www.mediawiki.org/wiki/Manual:Upgrading"
+   ui_msg ""
+   if {![file exists ${docpath}/AdminSettings.php]} {
+      xinstall -m 660 ${docpath}/AdminSettings.sample \
+         ${docpath}/AdminSettings.php
+      ui_msg "Make sure ${docpath}/AdminSettings.php has correct information"
+   } else {
+      ui_msg "${docpath}/AdminSettings.php has not been touched, make sure"
+      ui_msg "it is correct and anything in ${docpath}/AdminSettings.sample"
+      ui_msg "needed has been copied to it"
+   }
+}
+
+variant mysql4 conflicts postgresql83 postgresql84 description "use mysql4 instead of mysql5" {
+   depends_lib-append   port:mysql4
+   depends_lib-delete   path:bin/mysql_config5:mysql5
+}
+
+variant postgresql83 conflicts mysql4 postgresql84 description "Use postgreslq83 instead of mysql5" {
+   depends_lib-append   port:postgresql83
+   depends_lib-delete   path:bin/mysql_config5:mysql5
+}
+
+variant postgresql84 conflicts mysql4 postgresql83 description "Use postgreslq84 instead of mysql5" {
+   depends_lib-append   port:postgresql84
+   depends_lib-delete   path:bin/mysql_config5:mysql5
+}
+

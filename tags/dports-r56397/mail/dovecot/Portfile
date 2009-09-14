@@ -1,0 +1,88 @@
+# $Id: Portfile 51755 2009-06-02 15:17:42Z jberry@macports.org $
+
+PortSystem          1.0
+
+name                dovecot
+epoch               20060722
+version             1.1.16
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          mail
+maintainers         jberry openmaintainer
+platforms           darwin
+
+description         Secure, fast imap and pop3 server
+long_description    Dovecot is an IMAP and POP3 server for Linux/UNIX-like \
+                    systems, written with security primarily in mind. Although \
+                    it's written in C, it uses several coding techniques to \
+                    avoid most of the common pitfalls.
+
+homepage            http://dovecot.org/
+
+master_sites        ${homepage}releases/${branch}
+checksums           md5     2e20c761416b16aa0fe9cac260ca0d2d \
+                    sha1    3aa7f386559f244b3a9addad27c4845c554e545b \
+                    rmd160  53122e86f217e33f24b52559fece5ace35689eb4
+
+depends_build       port:pkgconfig
+depends_lib         port:libiconv \
+                    port:zlib \
+                    port:openssl
+
+configure.args      --sysconfdir=${prefix}/etc/dovecot \
+                    --localstatedir=${prefix}/var \
+                    --with-ssl=openssl --with-ssl-dir=${prefix}/etc/ssl
+
+configure.cppflags  "-I${prefix}/include/openssl"
+
+post-configure {
+    # madvise fails on darwin 7 and earlier, but is fixed on darwin 8
+    if { ${os.platform} == "darwin" && [rpm-vercomp ${os.version} 8.0] < 0 } {
+        reinplace "s|#define HAVE_MADVISE 1|/* #undef HAVE_MADVISE */|" ${worksrcpath}/config.h
+    }
+}
+
+post-destroot   {
+    # Create the dovecot user and group
+    addgroup dovecot
+    set gid [existsgroup dovecot]
+    adduser dovecot gid=${gid} realname=Dovecot
+}
+
+platform darwin 7 {
+    # Avoid broken poll
+    configure.args-append --with-ioloop=select
+}
+
+platform darwin 8 {
+    configure.args-append --with-ioloop=kqueue
+}
+
+platform darwin 9 {
+    configure.args-append --with-ioloop=kqueue
+}
+
+platform darwin 10 {
+    configure.args-append --with-ioloop=kqueue
+}
+
+variant postgres {
+    depends_lib-append  port:postgresql80
+    configure.args-append       --with-pgsql
+    configure.ldflags-append    "-L${prefix}/lib/pgsql8"
+    configure.cppflags-append   "-I${prefix}/include/pgsql8"
+}
+
+variant rawlog  {   configure.args-append   --with-rawlog   }
+
+variant ldap    {   configure.args-append   --with-ldap
+                    depends_lib-append  port:openldap
+}
+
+startupitem.create      yes
+startupitem.executable  ${prefix}/sbin/dovecot
+startupitem.pidfile     auto ${prefix}/var/run/dovecot/master.pid
+
+livecheck.check regex
+livecheck.url   ${homepage}download.html
+livecheck.regex "${name}-(\\d+\\.\\d+(\\.\\d+)?).tar.gz"
+

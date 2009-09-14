@@ -1,0 +1,44 @@
+# $Id: Portfile 55874 2009-08-20 18:46:09Z ryandesign@macports.org $
+
+PortSystem       1.0
+
+name             autoconf
+version          2.64
+revision         2
+categories       devel
+maintainers      ram openmaintainer
+platforms        darwin
+
+description      Automatically configures software for compilation
+long_description \
+  Autoconf is an extensible package of m4 macros that produce shell \
+  scripts to automatically configure software source code packages. \
+  These scripts can adapt the packages to many kinds of UNIX-like \
+  systems without manual user intervention. Autoconf creates a \
+  configuration script for a package from a template file that lists \
+  the operating system features that the package can use, in the form \
+  of m4 macro calls.
+
+homepage         http://www.gnu.org/software/autoconf/
+master_sites     gnu
+use_bzip2        yes
+universal_variant       no
+
+checksums        md5 ef400d672005e0be21e0d20648169074 \
+                 sha1 dfbcdbd7dd74a52130dda324e9d94ee0b8551466 \
+                 rmd160 cf498949b3cc0a6bc465a50114c98750871bcf49
+
+depends_lib      path:bin/perl:perl5 \
+                 port:m4 \
+                 port:help2man
+
+# If libtool is eventually installed, it will provide glibtoolize (not libtoolize)
+post-patch {
+  reinplace "s|'libtoolize'|'glibtoolize'|" ${worksrcpath}/bin/autoreconf.in
+}
+
+configure.perl   ${prefix}/bin/perl
+
+livecheck.check  regex
+livecheck.url    http://ftp.gnu.org/gnu/${name}/?C=M&O=D
+livecheck.regex  ${name}-(\\d+\\.\\d+)

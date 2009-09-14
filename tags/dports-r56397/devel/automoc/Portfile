@@ -1,0 +1,27 @@
+# $Id: Portfile 53505 2009-07-07 07:39:47Z illogic-al@macports.org $
+
+PortSystem          1.0
+PortGroup           kde4   1.0
+
+name                automoc
+version             0.9.88
+revision            1
+categories          devel kde kde4
+maintainers         nomaintainer
+description         A tool which automatically creates .moc files and compiles them in.
+long_description    ${description} Necessary for compiling KDE programs.
+platforms           darwin
+homepage            http://www.kde.org
+master_sites        kde:stable/${name}4/${version}/
+use_bzip2           yes
+distname            ${name}4-${version}
+checksums           md5     91bf517cb940109180ecd07bc90c69ec \
+                    sha1    d864c3dda99d8b5f625b9267acfa1d88ff617e3a \
+                    rmd160  8545f159092c9237f8c0f0f14b0dca9bfeac5c19
+
+# depends_build, not depends_build-append should be used here. 
+# See dports/_resources/port1.0/group/kde4-1.0.tcl for reason.
+depends_build       port:cmake
+
+configure.args-append   ../${distname}
+

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54667 2009-07-31 07:26:11Z toby@macports.org $
+
+PortSystem          1.0
+
+name                memtester
+version             4.1.2
+categories          sysutils
+maintainers         hostwizard.com:scott
+platforms           darwin
+description         A userspace utility for testing the memory subsystem for \
+                    faults.
+long_description    ${description}
+
+homepage            http://pyropus.ca/software/memtester/
+master_sites        ${homepage}/old-versions
+
+checksums           md5     33c744ac434eb1f3d7e09c891f2979d6 \
+                    sha1    2131cc2b36cbec0e00c389d5be4fd24b94affaf5 \
+                    rmd160  531bf0c0a175a1e49cbdc7896a7c61a1cd742e4e
+
+livecheck.url       ${homepage}/old-versions/
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+
+use_configure       no
+
+pre-patch {
+     reinplace "s|/usr/local|${destroot}${prefix}|" ${worksrcpath}/Makefile
+     reinplace "s|man/man|share/man/man|" ${worksrcpath}/Makefile
+     reinplace "s|^cc|${configure.cc}|g" ${worksrcpath}/conf-cc ${worksrcpath}/conf-ld
+}

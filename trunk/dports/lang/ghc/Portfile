@@ -1,0 +1,340 @@
+# $Id: Portfile 55181 2009-08-07 11:32:37Z snc@macports.org $
+
+PortSystem 1.0
+
+name		ghc
+set canonicalname	ghc
+version		6.10.3
+revision	7
+categories	lang haskell
+maintainers	gwright
+platforms	darwin
+description	The Glorious Glasgow Haskell Compilation System
+long_description	\
+		The Glasgow Haskell Compiler is a robust,		\
+		fully-featured, optimising compiler and interactive	\
+		environment for Haskell 98, GHC compiles Haskell to	\
+		either native code or C.  It implements numerous	\
+		experimental language extensions to Haskell 98,		\
+		for example: concurrency, a foreign language interface,	\
+		multi-parameter type classes, scoped type variables,	\
+		existential and universal quantification, unboxed	\
+		types, exceptions, weak pointers, and so on.		\
+		GHC comes with a generational garbage collector,	\
+		and a space and time profiler.
+
+homepage	http://haskell.org/${canonicalname}
+master_sites	${homepage}/dist/${version}/
+
+use_bzip2	yes
+
+distfiles	${canonicalname}-${version}-src.tar.bz2			\
+		${canonicalname}-${version}-src-extralibs.tar.bz2	\
+		testsuite-${version}.tar.bz2
+
+checksums       ${canonicalname}-${version}-src.tar.bz2 \
+                    md5     3de6a6d434c2b43def10c4cc613b265e \
+                    sha1    598bef94c99011a4f6791b8fbb7153ba7dffaf92 \
+                    rmd160  90b01fefd474a64cf6b6b507f224abf6250745d3 \
+                ${canonicalname}-${version}-src-extralibs.tar.bz2 \
+                    md5     d0fe09625556ea274df11d601c1b2a15 \
+                    sha1    4c208e0d4e604b39bcd7da753183a9f259408864 \
+                    rmd160  7a0b46f9934f154fc897fcd44f7f79d4d98c1e94 \
+                testsuite-${version}.tar.bz2 \
+                    md5     8db949b5bca633b665952daaf2c4ad1c \
+                    sha1    f857e5642f1beda71d0f96d96e02c45d953edd23 \
+                    rmd160  723b12fed8250647ceaf89233153765a09a7b743 \
+
+# ghc does not support a universal build:
+universal_variant	no
+
+# On (at least) i386/Tiger, the file compiler/ghc.cabal.in needs to be
+# patched so it can find the GMP library.
+#
+patchfiles	patch-configure.ac.diff			\
+		patch-aclocal.m4.diff			\
+		patch-compiler-ghc.cabal.in.diff	\
+		patch-libraries-Makefile.diff		\
+		patch-runProcess.c.diff
+
+depends_lib	port:gmp	\
+		port:ncursesw	\
+		port:libiconv
+
+variant cabal_configure_debug description {Add verbose debugging to cabal configure commands} {
+	patchfiles-append	patch-compiler-Makefile-debug.diff	\
+				patch-ghc-Makefile-debug.diff		\
+				patch-libraries-Makefile-debug.diff	\
+				patch-mk-cabal.mk-debug.diff
+
+	patchfiles-delete	patch-libraries-Makefile.diff
+}
+
+# Yes, it some situations (-fvia-C) we really need perl
+# to _run_ ghc, since the mangler (an assembly to assembly transformation)
+# is a perl script. That's why it called the "Evil Mangler".
+#
+# Not only that, but since correctly handling whitespace is critical,
+# only perl 5.8 is known to work reliably.
+#
+depends_lib-append	port:perl5.8
+configure.env-append	PerlCmd=${prefix}/bin/perl5.8
+
+worksrcdir	${canonicalname}-${version}
+
+platform darwin 7 {
+		pre-fetch {
+			return -code error "${canonicalname} is not supported on Mac OS X 10.3.x (Panther)"
+		}
+}
+
+
+platform darwin 8 powerpc {
+		global ghc_bootversion
+		set ghc_bootversion	6.10.1
+
+		master_sites-append	${homepage}/dist/${ghc_bootversion}/:bootstrap
+
+		distfiles-append	${canonicalname}-${ghc_bootversion}-darwin-ppc-tiger-bootstrap.tar.bz2:bootstrap
+
+                checksums-append	${canonicalname}-${ghc_bootversion}-darwin-ppc-tiger-bootstrap.tar.bz2 md5     511f4bec375b51aaa82de999529916ae		\
+                      sha1    cb6974a680168246c6e13a92818b39c559d7a2b4	\
+                      rmd160  be60cfffc0ed223fb39ce2fe40ad501486564f0e
+
+		extract.only		${canonicalname}-${version}-src.tar.bz2 \
+					${canonicalname}-${version}-src-extralibs.tar.bz2 \
+					${canonicalname}-${ghc_bootversion}-darwin-ppc-tiger-bootstrap.tar.bz2
+
+		pre-fetch {
+			set minimum_xcodeversion 2.5
+        		set current_xcodeversion [exec defaults read /Developer/Applications/Xcode.app/Contents/Info CFBundleShortVersionString]
+        		if {[rpm-vercomp ${current_xcodeversion} ${minimum_xcodeversion}] < 0} {
+            			ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} requires Xcode ${minimum_xcodeversion} but you have Xcode ${current_xcodeversion}."
+            			return -code error "incompatible Xcode version"
+        		}
+		}
+}
+
+
+platform darwin 8 i386 {
+		global ghc_bootversion
+		set ghc_bootversion	6.6
+
+		master_sites-append	${homepage}/dist/${ghc_bootversion}/:bootstrap
+
+		distfiles-append	${canonicalname}-${ghc_bootversion}-darwin-i386-tiger-bootstrap-rev1.tar.bz2:bootstrap
+
+		checksums-append	${canonicalname}-${ghc_bootversion}-darwin-i386-tiger-bootstrap-rev1.tar.bz2 md5 f01663cecefd50b5f1e1f524f49cd6df
+
+		extract.only		${canonicalname}-${version}-src.tar.bz2 \
+					${canonicalname}-${version}-src-extralibs.tar.bz2 \
+					${canonicalname}-${ghc_bootversion}-darwin-i386-tiger-bootstrap-rev1.tar.bz2
+
+		pre-fetch {
+			set minimum_xcodeversion 2.5
+        		set current_xcodeversion [exec defaults read /Developer/Applications/Xcode.app/Contents/Info CFBundleShortVersionString]
+        		if {[rpm-vercomp ${current_xcodeversion} ${minimum_xcodeversion}] < 0} {
+            			ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} requires Xcode ${minimum_xcodeversion} but you have Xcode ${current_xcodeversion}."
+            			return -code error "incompatible Xcode version"
+        		}
+		}
+}
+
+
+platform darwin 9 powerpc {
+		global ghc_bootversion
+		set ghc_bootversion	6.10.1
+
+		master_sites-append	${homepage}/dist/${ghc_bootversion}/:bootstrap
+
+		distfiles-append	${canonicalname}-${ghc_bootversion}-darwin-ppc-leopard-bootstrap.tar.bz2:bootstrap
+
+                checksums-append	${canonicalname}-${ghc_bootversion}-darwin-ppc-leopard-bootstrap.tar.bz2 md5     511f4bec375b51aaa82de999529916ae	\
+                        sha1    cb6974a680168246c6e13a92818b39c559d7a2b4\
+                        rmd160  be60cfffc0ed223fb39ce2fe40ad501486564f0e
+
+		extract.only		${canonicalname}-${version}-src.tar.bz2 \
+					${canonicalname}-${version}-src-extralibs.tar.bz2 \
+					${canonicalname}-${ghc_bootversion}-darwin-ppc-leopard-bootstrap.tar.bz2
+
+		pre-fetch {
+			set minimum_xcodeversion 3.1.2
+        		set current_xcodeversion [exec defaults read /Developer/Applications/Xcode.app/Contents/Info CFBundleShortVersionString]
+        		if {[rpm-vercomp ${current_xcodeversion} ${minimum_xcodeversion}] < 0} {
+            			ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} requires Xcode ${minimum_xcodeversion} but you have Xcode ${current_xcodeversion}."
+            			return -code error "incompatible Xcode version"
+        		}
+		}
+}
+
+
+platform darwin 9 i386 {
+		global ghc_bootversion
+		set ghc_bootversion	6.8.2
+
+		master_sites-append	${homepage}/dist/${ghc_bootversion}/:bootstrap
+
+		distfiles-append	${canonicalname}-${ghc_bootversion}-darwin-i386-leopard-bootstrap.tar.bz2:bootstrap
+
+		checksums-append	${canonicalname}-${ghc_bootversion}-darwin-i386-leopard-bootstrap.tar.bz2 md5 f263cedef8bcbaa7e9014b3e06923583
+
+		extract.only		${canonicalname}-${version}-src.tar.bz2 \
+					${canonicalname}-${version}-src-extralibs.tar.bz2 \
+					${canonicalname}-${ghc_bootversion}-darwin-i386-leopard-bootstrap.tar.bz2
+
+		pre-fetch {
+			set minimum_xcodeversion 3.1
+        		set current_xcodeversion [exec defaults read /Developer/Applications/Xcode.app/Contents/Info CFBundleShortVersionString]
+        		if {[rpm-vercomp ${current_xcodeversion} ${minimum_xcodeversion}] < 0} {
+            			ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} requires Xcode ${minimum_xcodeversion} but you have Xcode ${current_xcodeversion}."
+            			return -code error "incompatible Xcode version"
+        		}
+		}
+}
+
+
+post-extract {
+     system "tar jxf ${distpath}/testsuite-${version}.tar.bz2 -C ${worksrcpath}"
+}
+
+
+post-patch	{
+		reinplace "s|XXPATH_TO_GCCXX|${configure.cc}|" ${worksrcpath}/libraries/Makefile
+
+		reinplace "s|XXPATH_TO_HSC2HSXX|${workpath}/ghc-bootstrap/bin/hsc2hs|" ${worksrcpath}/libraries/Makefile
+
+		reinplace "s|XXMACPORTS_PREFIXXX|${prefix}|" ${worksrcpath}/compiler/ghc.cabal.in
+
+		reinplace "s|/opt/local/lib/ghc-${ghc_bootversion}|${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}|g" ${workpath}/${canonicalname}-bootstrap/lib/ghc-${ghc_bootversion}/package.conf
+
+		reinplace "s|GHCBIN=/opt/local|GHCBIN=${workpath}/${canonicalname}-bootstrap|" ${workpath}/${canonicalname}-bootstrap/bin/ghc
+
+		reinplace "s|TOPDIROPT=-B/opt/local|TOPDIROPT=-B${workpath}/${canonicalname}-bootstrap|" ${workpath}/${canonicalname}-bootstrap/bin/ghc
+
+		if {"/opt/local" != ${prefix}} {
+			reinplace "s|-L/opt/local|-L${prefix}|" ${workpath}/${canonicalname}-bootstrap/bin/ghc
+			reinplace "s|-I/opt/local|-I${prefix}|" ${workpath}/${canonicalname}-bootstrap/bin/ghc
+			reinplace "s|/opt/local|${prefix}|g" \
+				${workpath}/${canonicalname}-bootstrap/lib/ghc-${ghc_bootversion}/ghc-asm \
+				${workpath}/${canonicalname}-bootstrap/lib/ghc-${ghc_bootversion}/ghc-split \
+		}
+}
+
+
+pre-configure	{
+		system "autoreconf ${worksrcpath}"
+
+		set cfg [open "${workpath}/ghc-bootstrap/bin/ghc-pkg" w]
+		puts $cfg "#!/bin/sh"
+		puts $cfg "GHCPKGBIN=${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}/ghc-pkg.bin"
+		puts $cfg "PKGCONF=${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}/package.conf"
+		puts $cfg "exec \$GHCPKGBIN --global-conf \$PKGCONF \${1+\"\$@\"}"
+		close $cfg
+
+		system "chmod +x ${workpath}/ghc-bootstrap/bin/ghc-pkg"
+
+		set cfg [open "${workpath}/ghc-bootstrap/bin/hsc2hs" w]
+		puts $cfg "#!/bin/sh"
+		puts $cfg "HSC2HSBIN=${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}/hsc2hs-bin"
+		if {${ghc_bootversion} eq "6.10.1"} {
+			puts $cfg "tflag=\"--template=${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}/hsc2hs-0.67/template-hsc.h\""
+		} else {
+			puts $cfg "tflag=\"--template=${workpath}/ghc-bootstrap/lib/ghc-${ghc_bootversion}/template-hsc.h\""
+		}
+		puts $cfg "for arg do"
+		puts $cfg "    case \"\$arg\" in"
+		puts $cfg "        -c*)	         HSC2HS_EXTRA=;;"
+		puts $cfg "        --cc=*)       HSC2HS_EXTRA=;;"
+		puts $cfg "	   -t*)	         tflag=;;"
+		puts $cfg "        --template=*) tflag=;;"
+		puts $cfg "        --)           break;;"
+		puts $cfg "    esac"
+		puts $cfg "done"
+		puts $cfg "exec \$HSC2HSBIN \$tflag \$HSC2HS_EXTRA -I${prefix}/include --lflag=\"-L${prefix}/lib\" \${1+\"\$@\"}"
+		close $cfg
+
+		system "chmod +x ${workpath}/ghc-bootstrap/bin/hsc2hs"
+
+		set cfg [open "${worksrcpath}/mk/build.mk" w]
+	  	puts $cfg "#"
+	  	puts $cfg "# Local configuration overrides for MacPorts"
+	  	puts $cfg "#"
+	  	puts $cfg "SRC_HC_OPTS += -I${prefix}/include -L${prefix}/lib"
+	  	puts $cfg "EXTRA_HSC2HS_OPTS += -I${prefix}/include --lflag=\"-L${prefix}/lib\""
+	  	puts $cfg "EXTRA_LD_OPTS += -L${prefix}/lib"
+		puts $cfg "EXTRA_CABAL_CONFIGURE_FLAGS += --extra-include-dirs=${prefix}/include"
+		puts $cfg "EXTRA_CABAL_CONFIGURE_FLAGS += --extra-lib-dirs=${prefix}/lib"
+	  	close $cfg
+}
+
+#bugs		GHC does not support DESTDIR. Instead, we install	\
+#		everything into ${destroot}${prefix}, and then fix up	\
+#		the five scripts which actually have the installation	\
+#		path hard coded.					\
+#									\
+#		The odd "ac_cv_lib_elf_nlist" environment variable	\
+#		is required to avoid including the wrong nlist.h	\
+#		header if libelf is installed on the system.
+
+configure.ldflags-append	"-L/usr/lib"
+configure.cflags-append		"-I${prefix}/include"
+configure.env-append	DYLD_FALLBACK_LIBRARY_PATH=${prefix}/lib	\
+			ac_cv_lib_elf_nlist=no
+
+configure.args  --prefix=${destroot}${prefix}				\
+		--datadir=${destroot}${prefix}/share/${canonicalname}-${version}	\
+		--with-gmp-includes=${prefix}/include			\
+		--with-gmp-libraries=${prefix}/lib			\
+		--with-ghc='${workpath}/${canonicalname}-bootstrap/bin/ghc'	\
+		--with-gcc=${configure.cc}
+
+build	{
+	system "cd ${worksrcpath} && env DYLD_FALLBACK_LIBRARY_PATH=${prefix}/lib ${build.cmd}"
+}
+
+# This should not be necessary, but it seems to work around a bug
+# that exists at least in MP 1.600.
+destroot	{
+	system "cd ${worksrcpath} && ${destroot.cmd} ${destroot.target}"
+}
+
+# Note that we catch the results of the tests, since usually at least
+# one of the tests unexpectedly fails.
+
+set testlog ${canonicalname}-${version}-tests.log
+
+test {
+     set testpath    ${worksrcpath}/testsuite-${version}
+     catch {system "cd ${testpath} && make stage=2 2>&1 | tee ${workpath}/${testlog}"}
+}
+
+
+post-destroot	{
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghc
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghc-${version}
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghci
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghci-${version}
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghc-pkg
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/ghc-pkg-${version}
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/haddock
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/hsc2hs
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/bin/runghc
+
+	reinplace "s|\\\$@\"\}|\\\$@\"\} -L${prefix}/lib -I${prefix}/include |" ${destroot}${prefix}/bin/ghc
+	reinplace s|${destroot}${prefix}|${prefix}|g ${destroot}${prefix}/lib/${canonicalname}-${version}/package.conf
+
+	file rename ${destroot}${prefix}/lib/${canonicalname}-${version}/libffi.a ${destroot}${prefix}/lib/${canonicalname}-${version}/libHsLocalFfi.a
+	reinplace s|"ffi"|"HsLocalFfi"| ${destroot}${prefix}/lib/${canonicalname}-${version}/package.conf
+
+	file rename ${destroot}${prefix}/bin/haddock ${destroot}${prefix}/bin/haddock-${canonicalname}
+
+        system "ranlib ${destroot}${prefix}/lib/ghc-${version}/*.a"
+
+	if {[file exists ${workpath}/${testlog}]} {
+		set testsavepath ${prefix}/share/${canonicalname}-${version}/tests
+		file mkdir  ${destroot}${testsavepath}
+		file rename ${workpath}/${testlog} ${destroot}${testsavepath}/${testlog}
+		ui_msg "Test results are saved in ${testsavepath}"
+	}
+}
+

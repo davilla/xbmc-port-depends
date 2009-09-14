@@ -1,0 +1,45 @@
+# $Id: Portfile 55701 2009-08-17 09:35:00Z mww@macports.org $
+
+PortSystem 1.0
+
+name			imapsync
+version			1.286
+categories		mail
+platforms		darwin
+maintainers		mww
+description		imapsync is an IMAP synchronization, copy or migration tool.
+long_description	imapsync is an IMAP synchronization, copy or migration \
+				tool. Synchronize mailboxes between two imap servers. It is \
+				especially good at IMAP migration.
+
+homepage		http://www.linux-france.org/prj/imapsync/
+master_sites	${homepage}/dist/ freebsd
+extract.suffix	.tgz
+checksums           md5     b60b1b280540dbe4f5787df32515c1af \
+                    sha1    a98ab539270a811554e4bab476d815695be0e96b \
+                    rmd160  4e0cdbef137e743af5433c64859239cb5886decb
+
+depends_run		path:bin/perl:perl5 \
+				port:p5-digest-md5 \
+				port:p5-mail-imapclient \
+				port:p5-term-readkey \
+				port:p5-io-socket-ssl \
+				port:p5-datemanip
+
+configure {
+	reinplace "s|^#!.*|#!${prefix}/bin/perl|g" ${worksrcpath}/imapsync
+}
+
+build			{}
+
+destroot {
+	xinstall -m 755 ${worksrcpath}/imapsync ${destroot}${prefix}/bin/imapsync.pl
+	system "cd ${destroot}${prefix}/bin && ln -s imapsync.pl imapsync"
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 -W ${worksrcpath} CREDITS ChangeLog FAQ GPL INSTALL README \
+		TODO VERSION ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.check	regex
+livecheck.url	${homepage}/dist/?M=D
+livecheck.regex	${name}-(\[.0-9\]+)\\.tgz

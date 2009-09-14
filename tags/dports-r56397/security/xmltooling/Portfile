@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 56385 2009-08-26 23:09:06Z scantor@macports.org $
+
+PortSystem          1.0
+
+name                xmltooling
+version             1.2.2
+categories          security textproc xml shibboleth
+#license             Apachev2
+maintainers         snc scantor
+description         XMLTooling library for C++
+long_description    Toolkit for security-aware XML processing
+homepage            http://www.opensaml.org/
+
+platforms           darwin
+depends_lib         port:curl \
+                    port:xercesc3 \
+                    port:xml-security-c \
+                    port:log4shib
+
+master_sites        http://shibboleth.internet2.edu/downloads/opensaml/cpp/2.2.1/
+checksums           sha1 a7e6c0c0c398a74a178c8fc36548433062c55f6e
+
+configure.args      --disable-static \
+                    --with-openssl=${prefix} \
+                    --with-curl=${prefix} \
+                    --with-xerces=${prefix} \
+                    --with-xmlsec=${prefix}
+
+
+livecheck.check     regex
+livecheck.url       http://shibboleth.internet2.edu/downloads/opensaml/cpp/latest/
+livecheck.regex     ${name}-(\\d+\\.\\d+\\.\\d+)

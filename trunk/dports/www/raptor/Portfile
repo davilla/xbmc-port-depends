@@ -1,0 +1,28 @@
+# $Id: Portfile 54123 2009-07-21 18:16:36Z toby@macports.org $
+
+PortSystem 1.0
+
+name                raptor
+version             1.4.19
+description         Raptor RDF Parser Toolkit
+long_description    Raptor is an open source C library that provides a set of \
+                    parsers and serializers that generate Resource Description \
+                    Framework (RDF) triples by parsing syntaxes or serializing \
+                    the triples into a syntax.
+maintainers         lylejohnson.name:lyle
+categories          www
+platforms           darwin
+homepage            http://librdf.org/raptor/
+master_sites        http://download.librdf.org/source/
+checksums           md5 50acbd3b416c3f9e1a3a8ddb825bac25 \
+                    sha1 ddbd114dc57bd5f87724f8e880155a402aac79b6 \
+                    rmd160 c3d52e9fd308b24acf64881cab1648ee273c0beb
+depends_lib         port:curl \
+                    port:libiconv \
+                    port:libxml2 \
+                    port:libxslt \
+                    port:openssl \
+                    port:zlib
+configure.args      --mandir=${prefix}/share/man
+test.run            yes
+test.target         check

@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54776 2009-08-02 01:41:54Z snc@macports.org $
+
+PortSystem        1.0
+PortGroup         python25 1.0
+
+name                    py25-hgsvn
+version                 0.1.7
+categories-append       devel
+platforms               darwin
+maintainers             saispo
+homepage                http://pypi.python.org/pypi/hgsvn
+description             hgsvn is a set of scripts for Subversion and Mercurial
+long_description		This set of scripts allows to work locally on \
+						Subversion-managed projects using the Mercurial \
+						distributed version control system.
+
+master_sites            http://pypi.python.org/packages/source/h/hgsvn
+distname                hgsvn-${version}
+
+checksums               md5     aaa4ef4124ac388832cddc85c1866236 \
+                        sha1    e53a631786a011569d7cfd6677d0bb7f681a9b15 \
+                        rmd160  840f3c14461dbddf4ecbe4ac27053c18e2a56579
+
+depends_lib-append      port:py25-setuptools
+
+post-destroot   {
+        xinstall -m 644 -W ${worksrcpath} AUTHORS.txt COPYING.txt README.txt TODO.txt  \
+                ${destroot}${prefix}/share/doc/${name}
+}
+

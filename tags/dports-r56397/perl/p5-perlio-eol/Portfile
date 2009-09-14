@@ -1,0 +1,12 @@
+# $Id: Portfile 50984 2009-05-14 21:08:43Z and.damore@macports.org $
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.setup		PerlIO-eol 0.13
+maintainers		geeklair.net:dluke
+description		This is a Perl extension for normalizing line endings (used by svk).
+long_description	${description}
+
+checksums		md5 7e11fb1cc3b2a65678714877ae361823
+platforms		darwin

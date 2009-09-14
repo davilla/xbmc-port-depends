@@ -1,0 +1,30 @@
+# $Id: Portfile 53418 2009-07-05 16:45:03Z devans@macports.org $
+
+PortSystem			1.0
+PortGroup			perl5 1.0
+
+perl5.setup			Gtk2 1.221
+maintainers			nomaintainer
+description			Bindings to Gtk+ library
+long_description \
+	Perl bindings to the 2.x series of the Gtk+ graphical user interface \
+	library.  This module allows you to write graphical user interfaces in \
+	a perlish and object-oriented way, freeing you from the casting and \
+	memory management in C, yet remaining very close in spirit to original \
+	API.
+
+platforms			darwin
+
+homepage			http://gtk2-perl.sourceforge.net/
+master_sites		sourceforge:gtk2-perl
+
+checksums               md5     ba412049d10978ed802b98976f6adaa9 \
+                        sha1    5c3d2eda84c50e619ea4cb6474cf92c437ea11e8 \
+                        rmd160  167267b086d7acf0d0b543a1af66fbc701a6643a
+
+depends_lib		port:gtk2 \
+				port:p5-extutils-depends \
+				port:p5-extutils-pkgconfig \
+				port:p5-glib \
+				port:p5-cairo \
+				port:p5-pango

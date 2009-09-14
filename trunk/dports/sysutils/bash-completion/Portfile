@@ -1,0 +1,46 @@
+# $Id: Portfile 50371 2009-04-29 21:58:25Z raimue@macports.org $
+
+PortSystem      1.0
+
+name            bash-completion
+version         1.0
+revision        1
+epoch           1
+categories      sysutils
+platforms       darwin
+maintainers     raimue
+description     Programmable bash{2,3} completions.
+long_description \
+    Programmable completion library for bash
+
+homepage        http://bash-completion.alioth.debian.org/
+master_sites    http://bash-completion.alioth.debian.org/files/
+checksums       md5     cd1c5648272917fbe0eef4ba30bb93f4 \
+                sha1    61040795731f5ff509c46e818a1edf0a7a93e11d \
+                rmd160  b590c2633c5c10c3e98b14a74f4e96c910b6177d
+
+post-patch {
+    reinplace "s:/etc/bash_completion:${prefix}/etc/bash_completion:g" \
+        ${worksrcpath}/bash_completion
+}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/etc/bash_completion.d
+    xinstall -m 755 ${worksrcpath}/bash_completion ${destroot}${prefix}/etc/
+    eval xinstall -m 644 [glob ${worksrcpath}/contrib/*] ${destroot}${prefix}/etc/bash_completion.d/
+    xinstall -m 644 ${filespath}/port.cmd ${destroot}${prefix}/etc/bash_completion.d/port
+}
+destroot.keepdirs   ${destroot}${prefix}/etc/
+
+post-install {
+    ui_msg  "To use bash_completion, add the following lines at the end of your .bash_profile:"
+    ui_msg  ""
+    ui_msg  "    if \[ -f ${prefix}/etc/bash_completion ]; then"
+    ui_msg  "        . ${prefix}/etc/bash_completion"
+    ui_msg  "    fi"
+    ui_msg  ""
+}
+
+livecheck.check     regex
+livecheck.url       ${master_sites}
+livecheck.regex     {bash-completion-(\d+(?:\.\d+)*)}

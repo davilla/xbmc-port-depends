@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55455 2009-08-11 02:58:43Z snc@macports.org $
+
+PortSystem 1.0
+
+name		arj
+version		3.10.22
+categories	archivers sysutils
+platforms   darwin
+description	create and extract files from dos .arj archives
+#license         GPL
+maintainers	snc openmaintainer
+long_description ${description}
+homepage	http://arj.sourceforge.net/
+master_sites	sourceforge:arj
+checksums	md5 f263bf3cf6d42a8b7e85b4fb514336d3
+depends_build	port:autoconf
+depends_lib     port:libtool
+use_autoconf    yes
+autoconf.dir    gnu
+configure.dir   ${autoconf.dir}
+
+post-extract {
+    if {[file exists ${prefix}/share/libtool/config/config.guess]} {
+        copy -force ${prefix}/share/libtool/config/config.guess ${prefix}/share/libtool/config/config.sub ${worksrcpath}/${autoconf.dir}
+    } else {
+        copy -force ${prefix}/share/libtool/config.guess ${prefix}/share/libtool/config.sub ${worksrcpath}/${autoconf.dir}
+    }
+}
+
+patchfiles	patch-conifgure.in patch-environ.c patch-makefile.in patch-postproc.c patch-uxspec.c
+
+build.target    prepare all
+
+livecheck.check	regex
+livecheck.url	${homepage}
+livecheck.regex ${name}-(\\d+(?:\\.\\d+)*)
+
+use_parallel_build	no

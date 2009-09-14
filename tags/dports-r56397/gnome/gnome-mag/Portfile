@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54728 2009-08-01 06:38:50Z devans@macports.org $
+
+PortSystem 1.0
+
+name		gnome-mag
+version         0.15.8
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description	GNOME magnifier.
+long_description       ${description}
+maintainers	nomaintainer
+categories	gnome
+platforms	darwin
+homepage	http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     654232f153051e2052d96007b8bdd273 \
+                sha1    8aa5b1b1028cd94cdc3f9ac7f290b9e510beac56 \
+                rmd160  a2771008eec11455b9cbcaa89157fc89a976a3d9
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:p5-xml-parser \
+                port:gnome-doc-utils \
+
+depends_lib     port:at-spi \
+                port:gconf \
+                port:libbonobo \
+                port:xorg-libXdamage \
+                port:xorg-libXcomposite
+
+use_bzip2 	yes
+
+configure.args  --enable-colorblind-applet=no \
+                --disable-schemas-install \
+                --x-includes=${prefix}/include \
+                --x-libraries=${prefix}/lib
+
+variant colorblind description {Enable building of colorblind applet} {
+                depends_lib-append port:libcolorblind
+                depends_lib-append port:py25-gnome
+                configure.args-delete --enable-colorblind-applet=no
+                configure.python ${prefix}/bin/python2.5
+}
+
+post-activate {
+        system "${prefix}/bin/update-desktop-database -q ${prefix}/share/applications; true"
+        system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+            gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

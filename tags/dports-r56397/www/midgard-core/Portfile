@@ -1,0 +1,50 @@
+# $Id: Portfile 50519 2009-05-02 12:11:55Z jwa@macports.org $
+
+PortSystem 1.0
+
+name		midgard-core
+version		8.09.5
+categories	www
+maintainers	jwa
+description	A content management system
+long_description Midgard is a content management system platform using \
+    Apache, PHP and MySQL.
+platforms	darwin
+homepage	http://www.midgard-project.org/
+
+master_sites	http://www.midgard-project.org/midcom-serveattachmentguid-a380eb50332d11debe5361285656cf1ecf1e/
+
+#use_bzip2	yes
+checksums           md5     e55a66d3f530faf6c8dd905e4bcde7ff \
+                    sha1    8b2edab52ed224f38f57faa13cee7eac48b37b36 \
+                    rmd160  dc97d3cfb44282ee2e5acf1453dd18f9abbbf9bf
+
+depends_lib	port:expat \
+    port:gettext \
+    port:glib2 \
+    port:dbus \
+    port:dbus-glib \
+    port:libiconv \
+    port:libxml2 \
+    port:mysql5 \
+    port:openssl \
+    port:zlib
+
+configure.args	--sysconfdir=${prefix}/etc/midgard/ \
+    --with-expat=${prefix} \
+    --with-mysql-config=mysql_config5 \
+    --with-iconv=${prefix}
+
+variant check description {add unit tests} {
+    depends_lib-append port:check
+    configure.args-append --with-check=${prefix}
+}
+
+post-install	{
+    ui_msg "NB! The other parts of the package are:"
+    ui_msg "midgard-apache2, php5-midgard and midgard-data"
+}
+
+livecheck.check	regex
+livecheck.url	${homepage}download
+livecheck.regex	${name}-(\[1-9\]+.\[0-9\]+.\[0-9\]+).tar.\[bg\]z

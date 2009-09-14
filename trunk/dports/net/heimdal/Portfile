@@ -1,0 +1,44 @@
+# $Id: Portfile 55688 2009-08-17 05:30:47Z devans@macports.org $
+
+PortSystem 1.0
+
+name		heimdal
+version		1.2.1
+categories	net security
+maintainers	landonf openmaintainer
+platforms	darwin
+description	Kerberos is a network authentication protocol.
+
+long_description	Kerberos provides a means of verifying the identities \
+			of principals, (e.g., a workstation user or a network \
+			server) on an open (unprotected) network.  This is \
+			accomplished without relying on authentication by the \
+			host operating system, without basing trust on host \
+			addresses, without requiring physical security of all \
+			the hosts on the network, and under the assumption \
+			that packets traveling along the network can be read, \
+			modified, and inserted at will.
+
+homepage	http://www.h5l.org/
+master_sites	${homepage}dist/src/
+checksums	md5 6e5028077e2a6b101a4a72801ba71b9e \
+		sha1 68b013a68bca7d544d29af0f890b9c668ec16936 \
+		rmd160 055e858200e53108ac24760516ff9d58e4fee0d2
+
+patchfiles      patch-appl-ftp-ftpd-logwtmp.c.diff
+
+# Use a separate prefix to avoid conflicts with the system kerberos headers
+# and libraries.
+destroot.violate_mtree yes
+configure.args	--prefix=${prefix}/heimdal \
+		--sysconfdir=${prefix}/etc --enable-shared \
+		--enable-static --without-x
+
+configure.cflags-append	-D_FORTIFY_SOURCE=0
+
+test.run	yes
+test.target	check
+
+livecheck.check regex
+livecheck.url   ${master_sites}
+livecheck.regex "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

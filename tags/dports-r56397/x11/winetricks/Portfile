@@ -1,0 +1,54 @@
+# $Id: Portfile 55987 2009-08-22 21:31:06Z ryandesign@macports.org $
+
+PortSystem              1.0
+
+name                    winetricks
+version                 20090821
+categories              x11
+maintainers             ryandesign
+homepage                http://code.google.com/p/winezeug/
+master_sites            http://www.kegel.com/wine/
+platforms               darwin
+distname                ${name}
+dist_subdir             ${name}/${version}
+extract.suffix
+extract.mkdir           yes
+use_configure           no
+universal_variant       no
+use_parallel_build      no
+
+description \
+    downloads and installs various redistributable runtime libraries
+
+long_description \
+    ${name} can help you prepare your system for Windows applications \
+    that mistakenly assume all users' systems have all the needed \
+    redistributable runtime libraries or fonts.
+
+checksums \
+    md5     fbfacc5a96312307be9956bdeda22a35 \
+    sha1    a33e512afd62230f3bf35f9cf1442390b10eae75 \
+    rmd160  90c48226ab3c9679a2e175183f74fb8e84b49978
+
+depends_run \
+    path:bin/xmessage:xmessage \
+    path:bin/wine:wine \
+    path:bin/cabextract:cabextract \
+    path:bin/openssl:openssl \
+    bin:curl:curl \
+    bin:unzip:unzip
+
+extract {
+    copy ${distpath}/${name} ${worksrcpath}
+}
+
+build {}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/${name}
+}
+
+
+livecheck.check         regex
+livecheck.url           [lindex ${master_sites} 0]${name}
+livecheck.regex         {^VERSION=(\d+)}

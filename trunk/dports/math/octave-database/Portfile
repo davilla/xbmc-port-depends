@@ -1,0 +1,40 @@
+# $Id: Portfile 53097 2009-06-29 14:03:12Z alakazam@macports.org $
+
+PortSystem 1.0
+
+name                octave-database
+version             1.0.4
+categories          math science
+platforms           darwin
+maintainers         and.damore alakazam
+description         These are bindings that allow SQL queries and other database \
+                    operations on postgres, mysql, sqlite, and standard ODBC \
+                    databases from within Octave.
+long_description    ${description}  A simplified interface that is uniform \
+                    across all database types is provided, as well as the \
+                    entire C client API for each database (libpq, libmysqlclient, etc).
+
+homepage            http://octave.sourceforge.net/
+master_sites        sourceforge:octave
+
+distname            database-$version
+
+checksums           md5     3de89d16ad1c5945ebcb90f8759803b0 \
+                    sha1    ee62edd5c213bc18a9be0a5696ab418b1887b2de \
+                    rmd160  6e768f1633e5f1f53c0224956135028459b0a505
+
+patchfiles          patch-sqlite3_wrap.cpp.diff patch-odbc_wrap.cpp.diff
+
+depends_lib-append  port:octave port:swig port:postgresql82 port:mysql5 port:sqlite3 port:unixODBC
+
+post-destroot {
+    move ${destroot}${prefix}/share/octave/octave_packages ${destroot}${prefix}/share/octave/octave_packages_${name}
+}
+
+post-activate {
+    system "octave --eval \"pkg rebuild\""
+}
+
+livecheck.check regex
+livecheck.url   http://octave.sourceforge.net/packages.html
+livecheck.regex http://downloads\.sourceforge\.net/octave/database-(\\d+(\\.\\d+)*)\.tar\.gz

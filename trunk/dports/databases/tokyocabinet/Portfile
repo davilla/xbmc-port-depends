@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 51526 2009-05-27 12:12:56Z pguyot@kallisys.net $
+
+PortSystem      1.0
+
+name            tokyocabinet
+version         1.4.23
+categories      databases
+maintainers     openmaintainer kallisys.net:pguyot
+platforms       darwin
+description     Tokyo Cabinet is a library of routines for managing a database.
+long_description    \
+    Tokyo Cabinet is a library of routines for managing a database. The database\
+    is a simple data file containing records, each is a pair of a key and a value.\
+    Every key and value is serial bytes with variable length. Both binary data and\
+    character string can be used as a key and a value. There is neither concept of\
+    data tables nor data types. Records are organized in hash table or B+ tree.
+homepage        http://tokyocabinet.sourceforge.net/
+master_sites    ${homepage} \
+                sourceforge:${name}
+checksums       md5     518f93305a99589301155ce3c4178f17 \
+                sha1    6e3567d59c9ef9e97d28d61a2ac126fe5a12752b \
+                rmd160  4ec699c4e091c661642cc79f389c959f54ce12c9
+
+depends_lib     port:zlib
+
+# To avoid linking against a previously installed version, remove the default
+# CPPFLAGS and LDFLAGS. The build scripts already add the
+# destination include and lib directories.
+configure.cppflags
+configure.ldflags
+
+configure.args  --mandir=${prefix}/share/man \
+                --datadir=${prefix}/share/doc
+
+test.run yes
+test.target check
+
+#default_variants +fastest
+
+variant debug conflicts devel profile fastest description {build for debugging} {
+    configure.args-append   --enable-debug
+}
+
+variant devel conflicts debug profile fastest description {build for development} {
+    configure.args-append   --enable-devel
+}
+
+variant profile conflicts debug devel fastest description {build for profiling} {
+    configure.args-append   --enable-profile
+}
+
+variant fastest conflicts debug devel profile description {build for fastest run} {
+    configure.args-append   --enable-fastest
+}
+
+variant off64 description {build with 64-bit file offset on 32-bit system} {
+    configure.args-append   --enable-off64
+}
+
+variant swap description {build for swapping byte-orders} {
+    configure.args-append   --enable-swap
+}
+
+livecheck.check sourceforge

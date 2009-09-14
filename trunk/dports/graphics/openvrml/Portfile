@@ -1,0 +1,98 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55877 2009-08-20 19:11:37Z ryandesign@macports.org $
+
+PortSystem              1.0
+
+name                    openvrml
+version                 0.18.3
+categories              graphics x11
+maintainers             ira.uka.de:raphael openmaintainer
+description             a cross-platform VRML and X3D browser and C++ runtime \
+                        library
+long_description        OpenVRML is a free cross-platform runtime for VRML and \
+                        X3D available under the GNU Lesser General Public \
+                        License. The OpenVRML distribution includes libraries \
+                        you can use to add VRML/X3D support to an application. \
+                        On platforms where GTK+ is available, OpenVRML also \
+                        provides a plug-in to render VRML/X3D worlds in Web \
+                        browsers.
+homepage                http://www.openvrml.org/
+platforms               darwin
+master_sites            sourceforge
+checksums               md5     82cee1ae3d9e9a0f71740f93d6dba24c \
+                        sha1    33da48191c03d80b42664dbafd1785be8128a3c4 \
+                        rmd160  14ef0b46de981d0ea6fe29a57b38caaeaefc5564
+
+depends_lib             port:boost \
+                        port:libpng \
+                        port:jpeg \
+                        port:fontconfig \
+                        port:mesa \
+                        port:libsdl
+depends_build           port:pkgconfig
+
+pre-extract {           if {"darwin" == ${os.platform} && 9 == ${os.major}} {
+                            set minimum_xcodeversion 3.1
+                            set current_xcodeversion [exec defaults read /Developer/Applications/Xcode.app/Contents/Info CFBundleShortVersionString]
+                            if {[rpm-vercomp ${current_xcodeversion} ${minimum_xcodeversion}] < 0} {
+                                ui_msg "On Mac OS X ${macosx_version}, ${name} ${version} requires Xcode ${minimum_xcodeversion} or later but you have Xcode ${current_xcodeversion}."
+                                return -code error "incompatible Xcode version"
+                            }
+                        }
+}
+
+configure.args          --disable-script-node-javascript \
+                        --disable-script-node-java \
+                        --disable-xembed \
+                        --disable-player \
+                        --disable-mozilla-plugin \
+                        --with-x \
+                        --x-includes=${prefix}/include \
+                        --x-libraries=${prefix}/lib
+configure.ldflags-append    -lboost_system-mt
+
+use_parallel_build      yes
+
+variant js_mozilla description {Enable support for JavaScript in the Script node with Mozilla} {
+    depends_lib-append          path:lib/xulrunner/libxul.dylib:xulrunner
+    configure.args-delete       --disable-script-node-javascript
+    configure.args-append       --enable-script-node-javascript
+    configure.cppflags-append   "-I${prefix}/include/xulrunner/unstable"
+}
+
+variant js_spidermonkey description {Enable support for JavaScript in the Script node with Spidermonkey} {
+    depends_lib-append          port:spidermonkey
+    configure.args-delete       --disable-script-node-javascript
+    configure.args-append       --enable-script-node-javascript \
+                                --with-libjs
+}
+
+variant no_opengl conflicts xembed description {Do not build the GL renderer} {
+    depends_lib-delete          port:mesa
+    configure.args-append       --disable-gl-renderer
+}
+
+variant xembed conflicts no_opengl description {Build the XEmbed control} {
+    depends_lib-append          port:gtkglext \
+                                port:dbus-glib
+    configure.args-delete       --disable-xembed
+}
+
+variant player requires xembed description {Build the GNOME openvrml-player} {
+    depends_lib-append          port:libgnomeui \
+                                port:curl
+    configure.args-delete       --disable-player
+}
+
+variant mozilla_plugin requires xembed description {Build the Mozilla plug-in} {
+    depends_lib-append          path:lib/xulrunner/libxul.dylib:xulrunner
+    configure.args-delete       --disable-mozilla-plugin
+    configure.args-append       --enable-mozilla-plugin
+    build.args-append           mozpluginsdir=${prefix}/lib/nsplugins
+    destroot.args-append        mozpluginsdir=${prefix}/lib/nsplugins
+}
+
+variant no_x11 description {
+    configure.args-delete       --with-x
+    configure.args-append       --without-x
+}

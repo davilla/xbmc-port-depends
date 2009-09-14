@@ -1,0 +1,44 @@
+# $Id: Portfile 52149 2009-06-11 08:32:02Z blb@macports.org $
+
+PortSystem 1.0
+
+name		xorg-xcb-proto
+version		1.5
+revision	1
+categories	x11 devel
+maintainers	jeremyhu openmaintainer
+description	X.org xcb-proto
+homepage	http://xcb.freedesktop.org
+platforms	darwin macosx
+long_description XML-XCB protocol descriptions
+master_sites	 ${homepage}/dist/
+
+distname	xcb-proto-${version}
+checksums           md5     7d0481790104a10ff9174895ae954533 \
+                    sha1    c3f93ba6b75635c1e9d1accdfa7907f43a0e986f \
+                    rmd160  cdf1537134432a32be588b60f15a83d1b40e8cf4
+use_bzip2	yes
+
+universal_variant no
+
+depends_run     port:libxml2
+
+variant python25 conflicts python26 description {Use python 2.5 for xcbgen} {
+    depends_run-append      port:python25
+    configure.python        ${prefix}/bin/python2.5
+}
+
+variant python26 conflicts python25 description {Use python 2.6 for xcbgen} {
+    depends_run-append      port:python26
+    configure.python        ${prefix}/bin/python2.6
+    destroot.target-append  pythondir=${frameworks_dir}/Python.framework/Versions/2.6/lib/python2.6/site-packages
+}
+
+# Default to 2.6 since 2.5 fails universal for me on Leopard... Ticket #17501
+if {![variant_isset python25]} {
+    default_variants +python26
+}
+
+livecheck.check regex
+livecheck.url   ${master_sites}?C=M&O=D
+livecheck.regex xcb-proto-(\\d+(?:\\.\\d+)*)

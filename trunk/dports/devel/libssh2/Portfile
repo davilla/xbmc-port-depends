@@ -1,0 +1,23 @@
+# $Id: Portfile 51973 2009-06-07 18:57:27Z pmq@macports.org $
+
+PortSystem 1.0
+PortGroup  muniversal 1.0
+
+name		  libssh2
+version		  1.1
+categories	  devel net
+platforms	  darwin
+maintainers	  pmq openmaintainer
+
+description	  libssh2 is a library implementing the SSH2 protocol
+long_description  libssh2 is a library implementing the SSH2 protocol as \
+		  defined by Internet Drafts: SECSH-TRANS(22), \
+		  SECSH-USERAUTH(25), SECSH-CONNECTION(23), SECSH-ARCH(20), \
+		  SECSH-FILEXFER(06), SECSH-DHGEX(04), and SECSH-NUMBERS(10).
+
+homepage	  http://www.libssh2.org
+master_sites	  sourceforge:
+checksums	  md5 f8a3eb9bb814e0a5a2bb76a5423f5129 \
+		  sha1 f3d65c8a24c6e8090366b9901e9be97a7d3f38e2
+
+depends_lib	  port:openssl port:zlib

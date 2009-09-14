@@ -1,0 +1,92 @@
+# $Id: Portfile 55447 2009-08-10 21:43:10Z ryandesign@macports.org $
+
+PortSystem 1.0
+
+name		xorg-server
+version		1.5.3-apple14
+categories	x11 devel
+maintainers	jeremyhu openmaintainer
+description	The X.org / Xquartz X server.
+homepage	http://www.x.org
+platforms	darwin macosx
+long_description The X.org X server allows you to run X11 applications on your computer.
+master_sites	http://xquartz.macosforge.org/downloads/src
+
+dist_subdir     ${name}
+distname        ${name}-${version}
+
+checksums           md5     4bba6a1d31d8cfaa7637f61134309b11 \
+                    sha1    742f3e8462af98b4f784a29d5b2a61b250a576c0 \
+                    rmd160  261c491b155fb74c48c93d3f02110d8203dd6024
+
+use_bzip2	yes
+use_parallel_build yes
+
+# Yes, mesa is a *BUILD* dependency
+depends_build \
+	port:pkgconfig \
+	port:mesa \
+	port:xorg-applewmproto \
+	port:xorg-damageproto \
+	port:xorg-evieproto \
+	port:xorg-fixesproto \
+	port:xorg-fontsproto \
+	port:xorg-glproto \
+	port:xorg-inputproto \
+	port:xorg-randrproto \
+	port:xorg-recordproto \
+	port:xorg-renderproto \
+	port:xorg-resourceproto \
+	port:xorg-trapproto \
+	port:xorg-scrnsaverproto \
+	port:xorg-videoproto \
+	port:xorg-xcmiscproto \
+	port:xorg-xproto \
+	port:xorg-xextproto \
+	port:xorg-xineramaproto \
+	port:xorg-xtrans \
+	port:autoconf \
+	port:automake \
+	port:libtool \
+	port:xorg-util-macros
+
+# This xinit dependency needs to be port: not bin: because we specifically run ${prefix}/bin/startx from bundle-main.c
+depends_run \
+	port:xinit \
+	port:xorg-fonts
+
+depends_lib \
+	path:lib/pkgconfig/pixman-1.pc:libpixman \
+	port:xorg-libxkbfile \
+	port:xorg-libXfont \
+	port:xorg-libXt \
+	port:xorg-libAppleWM \
+	port:xorg-libXfixes
+
+patchfiles nuke-old-extensions.patch xextproto.patch tiger.patch
+patch.args -p1
+
+use_autoreconf yes
+autoreconf.args -fvi
+
+configure.args	--with-apple-applications-dir=${applications_dir} --with-fontdir=${prefix}/share/fonts --with-apple-application-id=org.macports.X11
+
+# GL/internal/dri_interface.h is missing in prefix (provided by libdrm for the xorg DDX... not helpful for us)
+configure.cppflags-append -I/usr/include -I${filespath}/dri
+
+post-destroot {
+	ln -s Xquartz ${destroot}${prefix}/bin/X
+}
+
+platform macosx {
+	if { ![file exists /usr/include/Xplugin.h] } {
+		# Xplugin.h is missing on Tiger
+		configure.cppflags-append -I${filespath}/include
+	}
+
+	if {${os.major} < 9} {
+		post-install {
+			ui_msg "This server has not been thoroughly tested on Tiger.  Your feedback would be welcomed on x11-users@macosforge.org."
+		}
+	}
+}

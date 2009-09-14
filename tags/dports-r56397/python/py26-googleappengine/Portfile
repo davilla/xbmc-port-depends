@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55343 2009-08-09 16:57:51Z snc@macports.org $
+
+PortSystem              1.0
+PortGroup               python26 1.0
+
+name                    py26-googleappengine
+version                 1.2.4
+categories-append       devel www
+maintainers             snc openmaintainer
+description             The Google App Engine Python SDK
+long_description        This is the official Google App Engine SDK for Python.
+platforms               darwin
+
+homepage                http://code.google.com/appengine/
+master_sites            googlecode \
+                        http://googleappengine.googlecode.com/files/
+distname                google_appengine_${version}
+use_zip                 yes
+worksrcdir              google_appengine
+
+checksums           md5     35da6813470a32bfbdb081ad24c7509b \
+                    sha1    12b2c9c48c04e1f550b0d7343c40db91407f72fc \
+                    rmd160  d947ef11821a7a24671197d830c86e5b4987e6f0
+
+destroot {
+    file rename ${worksrcpath} ${destroot}${prefix}/share/${worksrcdir}
+}
+build {}
+
+livecheck.name          googleappengine
+livecheck.regex         "<a href=\"http://googleappengine.googlecode.com/files/google_appengine_(\\d+\\.\\d+\\.\\d+)\\.zip"

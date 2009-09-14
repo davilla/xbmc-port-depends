@@ -1,0 +1,50 @@
+# $Id: Portfile 54216 2009-07-23 04:28:22Z aecollins1@macports.org $
+
+PortSystem 1.0
+
+name            grc
+version         1.3
+categories      textproc
+platforms       darwin
+maintainers     aecollins1
+description     Generic Colouriser for colourising logfiles and output of commands.
+
+long_description \
+    Generic Colouriser provides colourised output of logfiles \
+    and commands. It provides the grc and grcat Python scripts \
+    for filtering text output and colourising it.
+
+homepage        http://kassiopeia.juls.savba.sk/~garabik/software/grc.html
+master_sites    http://kassiopeia.juls.savba.sk/~garabik/software/grc
+
+distname        ${name}_${version}
+worksrcdir      ${name}-${version}
+
+checksums       md5 a4814dcee965c3ff67681f6b59e6378c \
+                sha1 78048f49dc9067575937cecf1af7da907f824efa \
+                rmd160 2c0ddcfa5da80025436b11424304968a0648dbe6
+
+depends_lib     port:python25
+
+use_configure   no
+build           {}
+
+post-destroot   {
+    reinplace "s|#! /usr/bin/python|#!${prefix}/bin/python2.5|" \
+        ${worksrcpath}/grc ${worksrcpath}/grcat
+    reinplace "s|/etc|${prefix}/etc|g" \
+        ${worksrcpath}/grc ${worksrcpath}/grc.1
+    reinplace "s|/usr/local|${prefix}|g" \
+        ${worksrcpath}/grcat ${worksrcpath}/grcat.1
+    xinstall -m 755 -W ${worksrcpath} \
+        grc grcat ${destroot}${prefix}/bin
+    xinstall -m 755 -d ${destroot}${prefix}/share/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        conf.cvs conf.gcc conf.log conf.proftpd \
+        conf.diff conf.irclog conf.netstat conf.traceroute \
+        conf.esperanto conf.ldap conf.ping conf.wdiff ${destroot}${prefix}/share/${name}
+    xinstall -m 644 -W ${worksrcpath} \
+        grc.conf ${destroot}${prefix}/etc
+    xinstall -m 644 -W ${worksrcpath} \
+        grc.1 grcat.1 ${destroot}${prefix}/share/man/man1
+}

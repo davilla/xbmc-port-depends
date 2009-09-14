@@ -1,0 +1,33 @@
+# $Id: Portfile 51473 2009-05-26 01:36:20Z vinc17@macports.org $
+
+PortSystem 1.0
+
+name                gmp-ecm
+version             6.2.3
+categories          math
+platforms           darwin
+maintainers         vinc17
+description         Factor integers using the Elliptic Curve Method
+long_description    Free implementation of the Elliptic Curve Method (ECM) \
+                    for integer factorization.
+homepage            http://gforge.inria.fr/projects/ecm/
+master_sites        http://gforge.inria.fr/frs/download.php/22124/
+distname            ecm-${version}
+depends_lib         port:gmp
+checksums           md5     d8cca3784857aabfea9b3c9b0926c593 \
+                    sha1    b97d1b1b38de1a4587caa5c84d7387fc13753b3b \
+                    rmd160  bde2498f56f4601fc8b9a03fd3b1029bf553f5b7
+
+post-destroot {
+    set docdir ${destroot}${prefix}/share/doc/${name}
+    file mkdir ${docdir}
+    xinstall -m 644 -v -W ${worksrcpath} \
+        AUTHORS COPYING COPYING.LIB NEWS README README.lib TODO ${docdir}
+    set mandir ${destroot}${prefix}/share/man/man1
+    file mkdir ${mandir}
+    xinstall -m 644 -v -W ${worksrcpath} ecm.1 ${mandir}
+}
+
+livecheck.check     regex
+livecheck.url       ${homepage}
+livecheck.regex     GMP-ECM (\[0-9.\]+)

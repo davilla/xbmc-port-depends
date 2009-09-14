@@ -1,0 +1,34 @@
+# $Id: Portfile 53097 2009-06-29 14:03:12Z alakazam@macports.org $
+
+PortSystem 1.0
+
+name                octave-informationtheory
+version             0.1.8
+categories          math science
+platforms           darwin
+maintainers         and.damore alakazam
+description         Functions and routines for basic Information Theory definitions, and source coding.  
+long_description    ${description}
+
+homepage            http://octave.sourceforge.net/
+master_sites        sourceforge:octave
+
+distname            informationtheory-$version
+
+checksums           md5     8948c888555cd4377edcc3cdc8611bee \
+                    sha1    6f8ec439fc764c1140de8e44cdf0c1655683c861 \
+                    rmd160  bd79132384e307dcebd805e5a1ab2ab4af171b43
+
+depends_lib-append  port:octave 
+
+post-destroot {
+    move ${destroot}${prefix}/share/octave/octave_packages ${destroot}${prefix}/share/octave/octave_packages_${name}
+}
+
+post-activate {
+    system "octave --eval \"pkg rebuild\""
+}
+
+livecheck.check regex
+livecheck.url   http://octave.sourceforge.net/packages.html
+livecheck.regex http://downloads\.sourceforge\.net/octave/informationtheory-(\\d+(\\.\\d+)*)\.tar\.gz

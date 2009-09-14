@@ -1,0 +1,44 @@
+# $Id: Portfile 56113 2009-08-24 07:33:44Z mww@macports.org $
+
+PortSystem 1.0
+
+name			smake
+version			1.2a45
+categories		devel
+platforms		darwin
+maintainers		mww
+description		highly portable make program with automake features
+long_description	Smake is a highly portable make program with automake \
+				features. It is currently mainly targeted to be used \
+				with the makefiles system. 
+
+homepage		http://cdrecord.berlios.de/old/private/smake.html
+master_sites	ftp://ftp.berlios.de/pub/smake/alpha/
+checksums           md5     3598556895fb9a03f598cc21edb7faf8 \
+                    sha1    698ce7c27256f73faa75f7b7067fb40b7521ef4e \
+                    rmd160  78206b1efb4a134be435c3cab3bf3cd273033818
+use_bzip2		yes
+
+worksrcdir		${name}-1.2
+
+use_configure	no
+
+build.type		gnu
+
+pre-destroot	{
+	file delete ${worksrcpath}/INSTALL
+}
+destroot.destdir	INS_BASE=${destroot}${prefix} \
+					MANDIR=share/man \
+					INSUSR=`id -u` INSGRP=`id -g`
+post-destroot	{
+	file delete -force ${destroot}${prefix}/share/man/man5 \
+		${destroot}${prefix}/lib ${destroot}${prefix}/include
+}
+
+#livecheck.check	freshmeat
+#livecheck.name	_smake
+livecheck.check	md5
+livecheck.url	ftp://ftp.berlios.de/pub/smake/alpha/
+livecheck.md5	544fb9ddd5f9fa4b8e96da74a753abb9
+

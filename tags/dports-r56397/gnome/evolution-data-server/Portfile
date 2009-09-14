@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53297 2009-07-02 20:45:34Z devans@macports.org $
+
+PortSystem 1.0
+
+name            evolution-data-server
+version         2.26.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+description     Addressbook and calender libs for GNOME.
+long_description    Evolution Data Server provides a central location for \
+                    addressbook and calendar in the GNOME Desktop.
+maintainers     geekdaily.org:jim
+categories      gnome
+platforms       darwin
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     01205605a598253bc227ff360c7c3dad \
+                sha1    a9406b748d5a002df9570d17c91066575f2ba408 \
+                rmd160  83f68a464a0cfb50511f33e662d8a24ede42b9e6
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:p5-xml-parser \
+                port:gtk-doc
+
+depends_lib     port:libgnomeui \
+                port:libgweather \
+                port:libical \
+                port:nss
+
+use_bzip2       yes
+
+patchfiles      patch-configure.in.diff
+
+use_autoconf    yes
+
+configure.args  \
+        --enable-static \
+        --enable-nss \
+        --enable-smime \
+        --enable-gnome-keyring \
+        --enable-ipv6 \
+        --enable-nntp \
+        --with-libiconv=${prefix} \
+        --with-nspr-includes=${prefix}/include/nspr  \
+        --with-nspr-libs=${prefix}/lib/nspr  \
+        --with-nss-includes=${prefix}/include/nss \
+        --with-nss-libs=${prefix}/lib/nss \
+        --with-krb5=/usr \
+        --disable-schemas-install
+
+platform darwin 8 {
+    post-patch {
+        reinplace "s|#include <stdio.h>|#include <stdio.h>\\\n#include <sys/types.h>|g" \
+        ${worksrcpath}/camel/camel-block-file.h
+    }
+}
+
+variant gtk_doc description {Build gtk-doc documentation} {
+  configure.args-append --enable-gtk-doc
+}
+
+post-activate    {
+    system "export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` && \
+        gconftool-2 --makefile-install-rule ${prefix}/etc/gconf/schemas/*.schemas"
+}
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

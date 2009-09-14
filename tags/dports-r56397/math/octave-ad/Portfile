@@ -1,0 +1,34 @@
+# $Id: Portfile 53097 2009-06-29 14:03:12Z alakazam@macports.org $
+
+PortSystem 1.0
+
+name                octave-ad
+version             1.0.6
+categories          math science
+platforms           darwin
+maintainers         and.damore alakazam
+description         Automatic Forward Differentiation
+long_description    ${description}
+
+homepage            http://octave.sourceforge.net/
+master_sites        sourceforge:octave
+
+distname            ad-$version
+
+checksums           md5     9162813e37bad34c4277a30dd9d968da \
+                    sha1    71e32c0001c61dd62eec84f2d61e754dec5bcf2e \
+                    rmd160  1fdd5216d31035a03b5b6df6fe83fc0ebeca195c
+
+depends_lib-append  port:octave 
+
+post-destroot {
+    move ${destroot}${prefix}/share/octave/octave_packages ${destroot}${prefix}/share/octave/octave_packages_${name}
+}
+
+post-activate {
+    system "octave --eval \"pkg rebuild\""
+}
+
+livecheck.check regex
+livecheck.url   http://octave.sourceforge.net/packages.html
+livecheck.regex http://downloads\.sourceforge\.net/octave/ad-(\\d+(\\.\\d+)*)\.tar\.gz

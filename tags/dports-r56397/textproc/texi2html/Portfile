@@ -1,0 +1,35 @@
+# $Id: Portfile 52198 2009-06-12 02:23:19Z nox@macports.org $
+
+PortSystem 1.0
+
+name		texi2html
+version		1.82
+platforms	darwin
+categories	textproc
+maintainers	nomaintainer
+description	A Perl script which converts Texinfo source files to HTML output.
+long_description \
+	A Perl script which converts Texinfo source files to HTML output.
+homepage	http://www.nongnu.org/${name}
+master_sites	http://savannah.nongnu.org/download/${name}
+
+checksums       md5     7ea537a8c81ffbf5421b39c0333e91df \
+                sha1    e7bbe1197147566250abd5c456b94c8e37e0a81f \
+                rmd160  1949d1d857cb71e1b5070e36223a26896910d523
+
+patchfiles	patch-test-run_test.sh.diff
+
+depends_lib	path:bin/perl:perl5
+
+configure.perl	${prefix}/bin/perl
+
+use_parallel_build  yes
+
+test.run	yes
+test.target	check
+
+universal_variant   no
+
+livecheck.check	regex
+livecheck.url	${master_sites}
+livecheck.regex	${name}-(\\d+(?:\\.\\d+)*)

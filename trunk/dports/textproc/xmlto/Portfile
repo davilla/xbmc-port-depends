@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 51846 2009-06-05 08:24:48Z toby@macports.org $
+
+PortSystem      1.0
+
+name            xmlto
+version         0.0.22
+categories      textproc
+platforms       darwin
+maintainers     nomaintainer
+description     Convert an XML document to another format based on XSL \
+                or other tools
+
+long_description \
+    The purpose of xmlto is to convert an XML file to the desired format \
+    using whatever means necessary. This may involve two steps: \
+        1. The application of an appropriate XSL stylesheet using an XSL-T \
+           processor. \
+        2. Further processing with other tools. This step may not be necessary.
+
+homepage        http://cyberelk.net/tim/xmlto/
+master_sites    https://fedorahosted.org/releases/x/m/xmlto/
+use_bzip2       yes
+
+checksums       md5     12f297dc7051e4fef08339980f88a1dd \
+                sha1    dfe5a5a80bfd814d9e048be55cf8e3d176ad2d0a \
+                rmd160  7e2bf68d114473a6ca5162c2d88eaf46ed3a5f46
+
+depends_lib     port:libxslt \
+                port:libxml2 \
+                port:getopt \
+                port:docbook-xml \
+                port:docbook-xsl
+
+patchfiles      patch-xmlto.in.diff
+
+configure.args  --with-getopt=${prefix}/bin/getopt \
+                --mandir=${prefix}/share/man
+
+build.env-append      XML_CATALOG_FILES=${prefix}/etc/xml/catalog
+
+destroot.env-append   ${build.env}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}-${version}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} AUTHORS COPYING ChangeLog FAQ \
+        NEWS README ${destroot}${docdir}
+    eval xinstall -m 0644 [glob ${worksrcpath}/doc/*] ${destroot}${docdir}
+}
+
+livecheck.check regex
+livecheck.url   https://fedorahosted.org/xmlto/browser/configure.in
+livecheck.regex "\\($name,\\s*(\\d+(?:\\.\\d+)*)\\)"

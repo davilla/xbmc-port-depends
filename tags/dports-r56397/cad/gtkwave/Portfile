@@ -1,0 +1,25 @@
+# $Id: Portfile 55067 2009-08-06 14:38:24Z gwright@macports.org $
+
+PortSystem 1.0
+
+name		gtkwave
+version		3.2.2
+categories	cad
+platforms	darwin
+maintainers	gwright
+description	A viewer for common electronic CAD waveform files.
+long_description	\
+	GTKWave is a fully featured GTK+ based wave viewer for Unix	\
+	and Win32 which reads LXT, LXT2, VZT, and GHW files as well	\
+	as standard Verilog VCD/EVCD files and allows their viewing.
+
+homepage	http://gtkwave.sourceforge.net
+master_sites	${homepage}/
+checksums	md5     644f090233f50c8e51ed9ad6b6bcf48b		\
+		sha1    8d92cbbfa8945f1cf9e7340609f30c2af5731567	\
+		rmd160  52ceb7268571d23df33117df91402d9cbc628ef7
+
+depends_lib	port:gtk2
+
+configure.args	--mandir=\\\${prefix}/share/man
+

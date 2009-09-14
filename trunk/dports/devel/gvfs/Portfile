@@ -1,0 +1,60 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 51193 2009-05-20 15:50:05Z devans@macports.org $
+
+PortSystem      1.0
+
+name            gvfs
+version         1.2.3
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     nomaintainer
+categories      devel
+platforms       darwin
+description     The Gnome Virtual File System.
+
+long_description \
+    gvfs is a userspace virtual filesystem designed \
+    to work with the i/o abstractions of gio (a new \
+    library available with glib). It installs several \
+    modules that are automatically used by applications \
+    using the APIs of libgio. The gvfs model differs \
+    from e.g. gnome-vfs in that filesystems must be \
+    mounted before they are used. There is a central \
+    daemon (gvfsd) that handles coordinting mounts, and \
+    then each mount is (typically) in its own daemon \
+    process (although mounts can share daemon process). \
+    gvfs comes with a set of backends, including trash \
+    support, sftp, smb, http, dav and others. There is \
+    a set of command line programs starting with gvfs- \
+    that lets you run commands (like cat, ls, stat, etc) \
+    on files in the gvfs.
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5     04a7f9c892b962cfedf0637dd2b01196 \
+                sha1    c94d52b0bf2fe83d7e26c05ce9d65d240cd57be4 \
+                rmd160  ea8469449073b9a0e50fde4301fa5bc4ff5bbe56
+
+depends_build   port:pkgconfig \
+                port:intltool
+
+depends_lib     port:gconf \
+                port:gnome-keyring \
+                port:libsoup \
+                port:libarchive
+
+configure.args  --disable-avahi \
+                --disable-fuse \
+                --disable-hal \
+                --disable-cdda \
+                --disable-obexftp \
+                --disable-gphoto2 \
+                --disable-samba \
+                --disable-bash-completion
+
+use_parallel_build  yes
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

@@ -1,0 +1,25 @@
+# $Id: Portfile 51605 2009-05-29 07:03:18Z jeremyhu@macports.org $
+PortSystem 1.0
+
+name		xorg-glproto
+version		1.4.10
+categories	x11 devel
+maintainers	jeremyhu openmaintainer
+description	X.org glproto
+homepage	http://www.x.org
+platforms	darwin
+long_description Prototype headers for the GLX extension to X11
+master_sites	${homepage}/pub/individual/proto/
+
+distname	glproto-${version}
+checksums           md5     c9f8cebfba72bfab674bc0170551fb8d \
+                    sha1    30d312863288316da26aa33bfd7d0b303c8b0851 \
+                    rmd160  8d5cffe095f3cc07c549d550c4fb0bf996afcc09
+
+use_bzip2	yes
+universal_variant	no
+
+livecheck.check regex
+livecheck.url   [lindex ${master_sites} 0]?C=M&O=D
+livecheck.regex glproto-(\\d+(?:\\.\\d+)*)
+

@@ -1,0 +1,28 @@
+# $Id: Portfile 53856 2009-07-15 18:26:27Z mww@macports.org $
+
+PortSystem 1.0
+
+name			libquicktime
+version			1.1.3
+categories		multimedia
+platforms		darwin
+maintainers		mww
+description		library for reading and writing quicktime files
+long_description	${description}
+
+homepage		http://libquicktime.sourceforge.net/
+master_sites		sourceforge
+checksums           md5     e4fcda219f1e0ca508d9baa3700e4a59 \
+                    sha1    cd991e5d5fa8690fe22db27e169a9258d3664bfc \
+                    rmd160  fee766a47f055b75d2406441c67fc491568a1757
+
+depends_lib		port:gettext port:jpeg port:libiconv port:libpng port:zlib path:lib/libavcodec.dylib:ffmpeg port:faac port:faad2 port:libvorbis port:libogg port:lame
+
+configure.args		--without-gtk --without-alsa \
+			--with-libjpeg --with-libpng --with-ffmpeg \
+			--with-vorbis=${prefix} \
+			--with-libiconv-prefix=${prefix} \
+			--with-libintl-prefix=${prefix} \
+			--without-doxygen \
+			--enable-gpl
+

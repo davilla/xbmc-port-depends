@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 53337 2009-07-03 19:37:44Z devans@macports.org $
+
+PortSystem      1.0
+
+name            gnome-themes
+version         2.26.3.1
+set branch      [join [lrange [split ${version} .] 0 1] .]
+maintainers     devans openmaintainer
+categories      gnome
+platforms       darwin
+description     A collection of themes and icons for GNOME 2 designed for accessibility.
+
+long_description \
+    New package of default themes for GNOME, \
+    which currently includes GTK+ and icon \
+    themes designed for accessibility.
+
+homepage        http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5     2b9fbbf9911098b9eb061c05f175940a \
+                sha1    3696948ee025479869a2dd570603a2adc235d8f9 \
+                rmd160  53176af0dfbf9534fa8337f1d4fe0f2b1ec31998
+
+depends_build   port:icon-naming-utils \
+                port:pkgconfig \
+                port:intltool
+
+depends_lib     port:gtk2 \
+                port:gtk-engines2 \
+                port:gnome-icon-theme
+
+configure.args  --enable-all-themes
+
+universal_variant   no
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/GNOME/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-([0-9\.]+)}

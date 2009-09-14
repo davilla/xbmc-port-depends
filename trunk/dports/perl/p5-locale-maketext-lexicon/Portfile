@@ -1,0 +1,14 @@
+# $Id: Portfile 50984 2009-05-14 21:08:43Z and.damore@macports.org $
+
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.setup		Locale-Maketext-Lexicon 0.62
+
+maintainers		geeklair.net:dluke
+description		Use other catalog formats in Maketext.
+
+long_description	$description
+
+checksums		md5 989642c1a83ddc7f1337d77422ee40cf
+platforms		darwin

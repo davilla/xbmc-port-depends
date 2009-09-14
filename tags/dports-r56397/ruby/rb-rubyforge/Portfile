@@ -1,0 +1,19 @@
+# $Id: Portfile 50984 2009-05-14 21:08:43Z and.damore@macports.org $
+
+PortSystem			1.0
+PortGroup			ruby 1.0
+
+ruby.setup			rubyforge 1.0.0 gem {} rubyforge_gem
+maintainers			kallisys.net:pguyot openmaintainer
+description			A simplistic script which automates a limited set of \
+					rubyforge operations
+long_description	${description}
+checksums			md5 f62026740e57c513744ec76d6885c56d \
+					sha1 1c5e7f4bb0c3a21743d3223f5d505f985f7673d2 \
+					rmd160 345214a148dff4c6a3bc8f2d3e3506c5d43b3f25
+platforms			darwin
+homepage			http://codeforpeople.com/lib/ruby/rubyforge/
+
+livecheck.check	regex
+livecheck.regex	"<b>${ruby.module}-(.*)</b>"
+livecheck.url	http://gentoo-portage.com/dev-ruby/${ruby.module}

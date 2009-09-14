@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 56359 2009-08-26 15:07:53Z snc@macports.org $
+
+PortSystem          1.0
+
+name                ZendFramework
+version             1.9.2
+categories          www lang
+#license             BSD
+maintainers         snc openmaintainer
+description         A framework for developing PHP web applications
+long_description    This is a port of the Zend Framework. The Zend Framework \
+                    aims to provide an architecture for developing entire \
+                    applications with no other library dependencies. This code \
+                    will always be actively developed, tested, and supported \
+                    by Zend and the PHP Collaboration Project.
+                  
+homepage            http://framework.zend.com/
+
+platforms           darwin freebsd
+depends_run         path:bin/php:php5
+
+master_sites        http://framework.zend.com/releases/${name}-${version}/
+
+checksums           md5     33fa57b9cf4831c717b1d4017ad93176 \
+                    sha1    f67f9c95612bb4427add9156a8369a8f4bb9f33a \
+                    rmd160  42a03dd0d810c382d96a1bcf5d0c74f7b7663d1d
+
+set zf_doc_dir      ${prefix}/share/doc/${name}
+set zf_lib_dir      ${prefix}/lib/${name}
+
+use_configure       no
+
+build               {}
+
+destroot {
+    # create paths
+    xinstall -d -m 755 ${destroot}${zf_lib_dir}
+    xinstall -d -m 755 ${destroot}${zf_doc_dir}
+
+    # most files stay in doc -- this is our first target
+    eval file copy [glob ${worksrcpath}/*] ${destroot}${zf_doc_dir}
+       
+    # now move real lib paths to lib
+    file rename ${destroot}${zf_doc_dir}/library ${destroot}${zf_lib_dir}
+    file rename ${destroot}${zf_doc_dir}/extras ${destroot}${zf_lib_dir}
+}
+
+post-install {
+    ui_msg "\nIf this is your first install, you might want to add"
+    ui_msg "'${zf_lib_dir}/library' to include_path in your php.ini."
+    ui_msg "i.e.: include_path = \".:${zf_lib_dir}/library\""
+    ui_msg "\nIf you want to use extra components you'd have to"
+    ui_msg "add '${zf_lib_dir}/extras', too."
+    ui_msg "\nFinally, if you wish to use Zend_Tool, add"
+    ui_msg "'${zf_doc_dir}/bin' to your \$PATH variable."
+}
+
+livecheck.check     regex
+livecheck.url       http://framework.zend.com/download/latest
+livecheck.regex     {releases/ZendFramework-(\d+\.\d+\.\d+[^ab\/]*)\/}

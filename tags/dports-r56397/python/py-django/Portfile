@@ -1,0 +1,55 @@
+# $Id: Portfile 54533 2009-07-29 10:25:43Z arthurk@macports.org $
+
+PortSystem          1.0
+PortGroup           python24 1.0
+
+name                py-django
+version             1.1
+categories-append   www
+platforms           darwin
+maintainers         arthurk
+homepage            http://www.djangoproject.com
+description         Django is a high-level Python Web framework
+long_description    Django is a high-level Python Web framework that \
+                    encourages rapid development and clean, pragmatic \
+                    design.
+
+master_sites        http://media.djangoproject.com/releases/${version}/
+distname            Django-${version}
+checksums           md5     b2d75b4457a39c405fa2b36bf826bf6b \
+                    sha1    690dda39595d70678840e917d712fc916d137c16 \
+                    rmd160  c3ae06b2cd2af3c8aa6058747acbd7646ea83cfd
+
+depends_lib-append  port:py-setuptools
+
+variant bash_completion {
+    depends_run-append  port:bash-completion
+
+    post-patch {
+        reinplace "s|django-admin.py|django-admin-2.4.py|g" \
+            ${worksrcpath}/extras/django_bash_completion
+    }
+
+    post-destroot {
+        xinstall -d ${destroot}${prefix}/etc/bash_completion.d
+        xinstall -m 644 ${worksrcpath}/extras/django_bash_completion \
+            ${destroot}${prefix}/etc/bash_completion.d/django-admin-2.4.py
+    }
+}
+
+post-destroot   {
+    xinstall -m 644 -W ${worksrcpath} AUTHORS INSTALL LICENSE README \
+        ${destroot}${prefix}/share/doc/${name}
+
+    file copy ${worksrcpath}/docs ${destroot}${prefix}/share/doc/${name}/docs
+    file copy ${worksrcpath}/examples \
+        ${destroot}${prefix}/share/doc/${name}/examples
+    
+    # To avoid conflict between py*-django
+    move ${destroot}${prefix}/bin/django-admin.py \
+        ${destroot}${prefix}/bin/django-admin-2.4.py
+}
+
+livecheck.check     regex
+livecheck.url       http://www.djangoproject.com/download/
+livecheck.regex     "The latest official version is (1\.\[0-9\]+\.\[0-9\]+)"

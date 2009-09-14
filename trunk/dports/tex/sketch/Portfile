@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55412 2009-08-10 11:16:52Z snc@macports.org $
+
+PortSystem          1.0
+
+name                sketch
+version             0.2.160
+categories          tex
+maintainers         snc openmaintainer
+description         2D and 3D drawings with LaTeX output.
+long_description    \
+    Sketch is a small, simple system for producing line drawings of two- or \
+    three-dimensional objects and scenes.  Sketch accepts a tiny scene \
+    description language and generates PSTricks or TikZ/PGF code for LaTeX.
+homepage            http://www.frontiernet.net/~eugene.ressler/
+
+platforms           darwin
+depends_run         bin:latex:texlive
+
+master_sites        ${homepage}
+checksums           md5     58e15271f1d49509e57b3f85858ba22d \
+                    sha1    90f9b87ca0e951eb6d10ea5e60d71dd36e19cdd9 \
+                    rmd160  79c0b06646dc2b7a05176df2654adcd877c54a4d
+
+extract.suffix      .tgz
+
+use_configure       no
+
+build.target        sketch
+
+destroot {
+    xinstall ${worksrcpath}/sketch ${destroot}${prefix}/bin
+    xinstall ${worksrcpath}/Doc/sketch.info ${destroot}${prefix}/share/info
+    xinstall -d ${destroot}${prefix}/share/sketch/doc
+    xinstall ${worksrcpath}/Doc/sketch.pdf ${destroot}${prefix}/share/sketch/doc
+    eval xinstall [ glob ${worksrcpath}/Doc/sketch/* ] \
+        ${destroot}${prefix}/share/sketch/doc
+    xinstall -d ${destroot}${prefix}/share/sketch/examples
+    eval xinstall [ glob ${worksrcpath}/Data/* ] \
+        ${destroot}${prefix}/share/sketch/examples
+}
+
+livecheck.check     regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+\\.\\d+(\\.\\d+)?)"

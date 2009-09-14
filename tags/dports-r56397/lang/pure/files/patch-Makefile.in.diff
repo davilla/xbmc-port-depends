@@ -1,0 +1,11 @@
+--- Makefile.in	2009-05-21 05:10:06.000000000 -0500
++++ Makefile.in	2009-06-01 18:40:46.000000000 -0500
+@@ -292,7 +292,7 @@
+ 	$(INSTALL) -m 644 $(srcdir)/pure.html $(srcdir)/purelib.html $(DESTDIR)$(libdir)/pure-$(version)
+ 	ln -sf $(libdir)/pure-$(version) $(DESTDIR)$(libdir)/pure
+ 	$(INSTALL) -m 644 $(srcdir)/pure.1 $(DESTDIR)$(man1dir)/pure-$(version).1
+-	ln -sf $(man1dir)/pure-$(version).1 $(DESTDIR)$(man1dir)/pure.1
++	ln -sf pure-$(version).1 $(DESTDIR)$(man1dir)/pure.1
+ else
+ 	$(INSTALL) -m 644 $(srcdir)/runtime.h $(DESTDIR)$(includedir)/pure
+ 	$(INSTALL) -m 644 $(srcdir)/pure_main.c pure_main.o $(DESTDIR)$(libdir)/pure

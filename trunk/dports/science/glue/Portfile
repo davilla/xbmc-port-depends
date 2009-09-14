@@ -1,0 +1,32 @@
+# $Id: Portfile 55818 2009-08-19 22:40:16Z ram@macports.org $
+
+PortSystem    1.0
+PortGroup     python25 1.0
+
+name          glue
+version       1.28.1
+categories    science
+platforms     darwin
+maintainers   ram
+
+description   Grid LSC User Environment
+long_description \
+  Glue is a suite of python modules and programs to allow users to run \
+  LSC codes on the grid.
+
+homepage      https://www.lsc-group.phys.uwm.edu/daswg/projects/glue.html
+master_sites  http://www.lsc-group.phys.uwm.edu/daswg/download/software/source/
+
+checksums     md5 be24fdd1880e13c193ce22cf699b0035 \
+              sha1 6bc1030e17efff7785b4385a9fdd3a6f39ae9499 \
+              rmd160 fec8428e34213f85e85a8cca1bddd5f824c86b28
+
+depends_lib-append port:py25-numpy \
+                   port:py25-pyrxp \
+                   port:py25-m2crypto \
+                   port:py25-cjson \
+                   port:py25-pyxmpp
+
+livecheck.check  regex
+livecheck.url    ${master_sites}
+livecheck.regex  {glue-(\d+(?:\.\d+)*).tar.gz}

@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; c-basic-offset: 4; indent-tabs-mode: nil; tab-width: 4; truncate-lines: t -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54881 2009-08-03 15:49:22Z macsforever2000@macports.org $
+
+PortSystem	1.0
+
+name		py26-pyqt4
+version		4.5.4
+categories	python devel
+platforms	macosx
+maintainers     saispo openmaintainer
+description	PyQt4 is a set of Python bindings for the Qt4 toolkit
+long_description \
+		PyQt4 is a set of Python bindings for the Qt4 toolkit. The \
+		bindings are implemented as a set of Python modules: qt, \
+		qtcanvas, qtgl, qtnetwork, qtsql, qttable, qtui and qtxml, \
+		and contains 300 classes and over 5,750 functions and methods.
+homepage	http://www.riverbankcomputing.co.uk/software/pyqt/intro
+master_sites	http://www.riverbankcomputing.com/static/Downloads/PyQt4/ \
+		http://pyqwt.sourceforge.net/support/
+distname	PyQt-mac-gpl-${version}
+
+checksums           md5     6440c56d3c293d02e6fa67720614ebcb \
+                    sha1    62450f65642bfe0acff1ac409c579220d70e4139 \
+                    rmd160  167395f4475af69be2614c497df7ed3e289317d7
+
+depends_lib	port:py26-sip port:qt4-mac
+
+set pyversion 2.6
+set qt_dir	${prefix}/libexec/qt4-mac
+
+# The patch file alters configure.py so that the qtdesigner plugin can link.
+# - it ensures that both LFLAGS are included and that the relevant version framework is linked
+patchfiles	patch-configure.py
+post-patch {
+    reinplace "s|@@MACPORTS_PYTHON_FRAMEWORK@@|${frameworks_dir}/Python.framework/Versions/${pyversion}/Python|" ${worksrcpath}/configure.py
+}
+
+pre-configure {
+	file copy -force ${qt_dir}/mkspecs/macx-g++/qmake.conf \
+		${worksrcpath}/qmake.conf
+
+	reinplace "s|-bundle|-bundle -flat_namespace -undefined suppress|" \
+		${worksrcpath}/qmake.conf
+}
+
+use_configure   yes
+
+configure.cmd	"${prefix}/bin/python2.6 configure.py \
+		-g -q ${qt_dir}/bin/qmake \
+		--confirm-license"
+configure.pre_args
+configure.post_args	LFLAGS="-F${prefix}/Library/Frameworks -L${prefix}/lib"
+
+build.target    all
+use_parallel_build yes
+
+test.run	yes
+test.cmd	cd qt && ${prefix}/bin/python2.6 -c 'import PyQt4'
+
+post-destroot {
+    ln -s ${frameworks_dir}/Python.framework/Versions/${pyversion}/bin/pyrcc4 ${destroot}${prefix}/bin/pyrcc4-${pyversion}
+    ln -s ${frameworks_dir}/Python.framework/Versions/${pyversion}/bin/pyuic4 ${destroot}${prefix}/bin/pyuic4-${pyversion}    
+    
+    
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc
+	file copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/${name}
+	file copy ${worksrcpath}/examples \
+		${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 -W ${worksrcpath} \
+		ChangeLog GPL_EXCEPTION.TXT GPL_EXCEPTION_ADDENDUM.TXT \
+		LICENSE.GPL2 LICENSE.GPL3 OPENSOURCE-NOTICE.TXT NEWS README \
+		THANKS \
+		${destroot}${prefix}/share/doc/${name}
+}

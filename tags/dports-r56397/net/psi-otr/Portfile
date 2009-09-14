@@ -1,0 +1,39 @@
+# $Id: Portfile 55611 2009-08-14 19:04:24Z rowue@macports.org $
+
+PortSystem      1.0
+
+name            psi-otr
+version         0.5
+categories      net chat
+maintainers     digitalis.org:rowue
+description     otr-plugin for psi - for plugin-enabled psi
+long_description \
+    Psi is a capable Jabber client aimed at experienced users.  Its design \
+    goals are simplicity and stability. This plugin adds the support fot \
+    off the message recording to psi
+
+platforms       darwin
+
+homepage        http://www.tfh-berlin.de/~s30935/
+master_sites    http://www.tfh-berlin.de/~s30935/files/
+
+checksums		md5     134c1c21e9e1bcb1e2a2e159bf895359 \
+                sha1    6fcc76f40ee25c284c7c812ce86586c5e624c5d8 \
+                rmd160  86eb4db5f6cc96e23bad81f63b6d745cf0beca3e
+
+depends_lib     port:psi \
+                port:libotr
+
+patchfiles      patch-psi-otr.pro.diff 
+
+configure {
+				system "qmake-mac"
+}
+
+destroot {
+        xinstall -m 755 -d ${destroot}/Applications/MacPorts/psi.app/Contents/Resources/plugins
+        file copy ${worksrcpath}/libpsi-otr.bundle ${destroot}/Applications/MacPorts/psi.app/Contents/Resources/plugins
+}
+
+
+

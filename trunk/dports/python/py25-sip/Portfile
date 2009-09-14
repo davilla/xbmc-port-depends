@@ -1,0 +1,49 @@
+# $Id: Portfile 54879 2009-08-03 15:43:19Z macsforever2000@macports.org $
+
+PortSystem 1.0
+
+name			py25-sip
+version			4.8.2
+platforms               macosx
+categories		python devel
+maintainers		saispo openmaintainer
+description		create Python bindings for C and C++ libraries
+long_description	SIP is a tool that makes it very easy to create \
+				Python bindings for C and C++ libraries. \
+				It was originally developed to create PyQt, \
+				the Python bindings for the Qt toolkit, \
+				but can be used to create bindings for any \
+				C or C++ library.
+
+homepage	http://www.riverbankcomputing.co.uk/software/sip/intro
+master_sites	http://www.riverbankcomputing.com/static/Downloads/sip4/ \
+                http://gentoo.mirrors.easynews.com/linux/gentoo/distfiles/ \
+                http://gentoo.osuosl.org/distfiles/ \
+                http://www.gtlib.gatech.edu/pub/gentoo/distfiles/
+
+distname	sip-${version}
+checksums	md5    7ae60712aa6b4095a8cdab11b437f8f0 \
+			sha1   0364027c34eb69ce8c51d316c68f10a02a42d036 \
+			rmd160 5b390d09a5b1a5e5fbf29d245aee8543397a1f19
+dist_subdir	python
+
+depends_lib	port:python25
+
+configure.cmd	${prefix}/bin/python2.5 configure.py
+configure.pre_args  -d ${prefix}/lib/python2.5/site-packages \
+				-e ${prefix}/include/python2.5 \
+				-v ${prefix}/share/sip \
+				-p macx-g++
+configure.post_args	LFLAGS="-F${prefix}/Library/Frameworks -L${prefix}/lib"
+
+test.run	yes
+test.cmd	cd siplib && ${prefix}/bin/python2.5 -c 'import sip'
+
+post-destroot {
+	xinstall -m 755 -d ${destroot}${prefix}/share/doc
+	file copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/${name}
+	xinstall -m 644 -W ${worksrcpath} LICENSE NEWS README \
+		${destroot}${prefix}/share/doc/${name}
+	system "${prefix}/bin/python2.5 ${prefix}/lib/python2.5/compileall.py ${destroot}${prefix}"
+	system "${prefix}/bin/python2.5 -O ${prefix}/lib/python2.5/compileall.py ${destroot}${prefix}"
+}

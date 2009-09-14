@@ -1,0 +1,39 @@
+# $Id: Portfile 50207 2009-04-27 18:58:10Z takanori@macports.org $
+
+PortSystem      1.0
+PortGroup       perl5 1.0
+
+set nkf_ver     2.0.9
+set nkf_date    20090426
+perl5.setup     NKF [string range ${nkf_ver} 0 2][string range ${nkf_ver} 4 end]-${nkf_date}
+categories-append \
+                textproc japanese
+maintainers     nifty.com:pelopor takanori openmaintainer
+description     A perl extension module to use nkf.
+long_description \
+                ${description}
+platforms       darwin
+homepage        http://sourceforge.jp/projects/nkf/
+master_sites    sourceforge_jp:nkf/37177/:nkf \
+                macports:nkf:patch
+distname        nkf-${nkf_ver}
+dist_subdir     nkf
+distfiles       [suffix ${distname}]:nkf
+patchfiles      nkf-${nkf_ver}-${nkf_date}.patch:patch
+checksums       nkf-${nkf_ver}-${nkf_date}.patch    rmd160  43ac422070f1b2ce476f6af562464156ea2786c2 \
+                [suffix ${distname}]                rmd160  c27b176f675428c0cbfb7779700979e60de3a42f
+
+worksrcdir      ${distname}/NKF.mod
+
+patch.dir       ${workpath}/${distname}
+patch.pre_args  -p1
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/share/doc/${name}/doc
+    xinstall -m 644 -W ${worksrcpath} Changes README ${destroot}${prefix}/share/doc/${name}
+}
+
+livecheck.check     regex
+livecheck.url       ${homepage}files/
+livecheck.version   ${nkf_ver}
+livecheck.regex     nkf-(\[0-9.a-z\]+)\\.tar

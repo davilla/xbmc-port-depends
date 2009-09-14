@@ -1,0 +1,23 @@
+# $Id: Portfile 50980 2009-05-14 19:41:55Z and.damore@macports.org $
+
+PortSystem    	1.0
+name      	vile
+version       	9.5
+categories    	editors
+maintainers   	waqar
+description   	Vi Like Emacs
+long_description   \
+	vile is a text editor which is extremely compatible \
+        with vi in terms of finger feel. in addition, it \
+        has extended capabilities in many areas, notably \
+        multi-file editing and viewing, key rebinding, real \
+        X window system support, an optional embedded perl \
+        interpreter, and robust support for non-Unix hosts.
+homepage	http://invisible-island.net/vile/
+platforms	darwin
+extract.suffix	.tgz
+master_sites	ftp://invisible-island.net/${name}/ \
+             	ftp://ftp.phred.org/pub/${name}/ \
+              	http://gd.tuwien.ac.at/editors/${name}/
+checksums	md5 bc0049be8b4906dacc1165e04a6d29e5
+configure.args  --with-perl --with-ncurses --mandir=${prefix}/share/man

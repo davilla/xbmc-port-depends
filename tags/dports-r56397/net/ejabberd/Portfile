@@ -1,0 +1,66 @@
+# $Id: Portfile 54532 2009-07-29 10:04:28Z toby@macports.org $
+
+PortSystem          1.0
+
+name                ejabberd
+version             2.0.5
+categories          net
+platforms           darwin
+maintainers         simon openmaintainer
+description         ejabberd is an XMPP application server.
+long_description    ${description} ejabberd stands for "Erlang Jabber Daemon"
+
+homepage            http://www.process-one.net/en/ejabberd/
+master_sites        http://www.process-one.net/downloads/ejabberd/${version}/
+checksums           md5     2d85b47df969daf0a78ed3b16562d731 \
+                    sha1    e5b8c4b742fdcc439da9458f94f530604abdfdd5 \
+                    rmd160  5ec0210b3995004c708180a66a096e0b9be5f1ba
+worksrcdir          ${worksrcdir}/src
+
+depends_lib         port:erlang \
+                    port:expat \
+                    port:openssl \
+                    port:libiconv \
+                    port:zlib
+
+configure.args      --with-expat=${prefix} \
+                    --with-zlib=${prefix} \
+                    --with-openssl=${prefix}
+
+# All ejabberd configuration files.
+set conf_files      {ejabberd.cfg ejabberdctl.cfg inetrc}
+
+destroot.keepdirs   ${destroot}${prefix}/var/log/ejabberd/
+
+post-destroot {
+    # Create sample configuration files so they don't get overwritten by an
+    # update.
+    set etc ${destroot}${prefix}/etc/ejabberd
+    foreach file ${conf_files} {
+        file rename ${etc}/${file} ${etc}/${file}.sample
+    }
+
+    # Install documentation.
+    set doc ${destroot}${prefix}/share/doc
+    xinstall -d ${doc}
+    file copy ${worksrcpath}/../doc ${doc}/${name}-${version}
+}
+
+post-install {
+    ui_msg "****************************************************************"
+    ui_msg "*                                                              *"
+    ui_msg "* If you run ejabberd for the first time, then you must rename *"
+    ui_msg "* the following configuration files by removing the .sample    *"
+    ui_msg "* extension:                                                   *"
+    ui_msg "*                                                              *"
+    ui_msg "* cd ${prefix}/etc/ejabberd/                                  *"
+    foreach file ${conf_files} {
+        ui_msg "* mv ${file}.sample ${file}"
+    }
+    ui_msg "*                                                              *"
+    ui_msg "****************************************************************"
+}
+
+livecheck.check     regex
+livecheck.url       ${homepage}release_notes
+livecheck.regex     "${name} (\\d+(?:\\.\\d+)*)"

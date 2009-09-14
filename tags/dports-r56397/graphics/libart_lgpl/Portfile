@@ -1,0 +1,38 @@
+# $Id: Portfile 52182 2009-06-11 18:56:18Z toby@macports.org $
+
+PortSystem      1.0
+
+name            libart_lgpl
+version         2.3.20
+set branch      [join [lrange [split ${version} .] 0 1] .]
+categories      graphics
+platforms       darwin
+maintainers     toby
+description     fast 2D image manipulation library
+
+long_description \
+    Libart is a library for high-performance 2D graphics. \
+    It supports a very powerful imaging model, basically the \
+    same as SVG and the Java 2D API. It includes all \
+    PostScript imaging operations, and adds antialiasing and \
+    alpha-transparency. It is also highly tuned for \
+    incremental rendering. It contains data structures and \
+    algorithms suited to rapid, precise computation of Region \
+    of Interest, and a two-phase rendering pipeline optimized \
+    for interactive display.
+
+homepage        http://www.levien.com/libart/
+master_sites    gnome:sources/${name}/${branch}/
+use_bzip2       yes
+
+checksums       md5 d0ce67f2ebcef1e51a83136c69242a73 \
+                sha1 40aa6c6c5fb27a8a45cd7aaa302a835ff374d13a \
+                rmd160 184cd3dd96e9cfadcba327644bc8c9dd32da26fa
+
+patchfiles      patch-Makefile.in patch-art_config.h
+
+use_parallel_build  yes
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

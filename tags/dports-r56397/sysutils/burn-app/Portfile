@@ -1,0 +1,55 @@
+# $Id: Portfile 55054 2009-08-06 11:59:07Z raimue@macports.org $
+
+PortSystem 1.0
+PortGroup xcode 1.0
+
+name            burn-app
+version         2.3
+categories      sysutils
+platforms       macosx
+maintainers     raimue
+
+description     Burn.app is a burning application for Mac OS X
+long_description \
+                Burn.app is an open source frontend for Apple's DiscBurning \
+                Framework
+
+homepage        http://burn-osx.sourceforge.net/
+master_sites    sourceforge:burn-osx
+distname        burn[strsed ${version} {s/\.//}]src
+use_zip         yes
+
+checksums       md5     b51d06ffe926786e0c65f52e49e95a45 \
+                sha1    4be2756fb92a6acd8d656ceca9d5b163111e5a14 \
+                rmd160  eee5110826eb177709e7ddb4a5e672c03e7e468b
+
+post-extract {
+    move "${workpath}/Burn Source.localized" ${worksrcpath}
+}
+
+post-patch {
+    reinplace -E {s,INFOPLIST_FILE = /Users/maarten/Desktop/Projecten/Burn/Source/Info.plist;,INFOPLIST_FILE = Info.plist;,} \
+        ${worksrcpath}/Burn.xcodeproj/project.pbxproj
+}
+
+xcode.configuration     Release
+
+variant universal {
+    xcode.target        "Burn (Universal)"
+}
+
+platform i386 {
+    if {![variant_isset universal]} {
+        xcode.target        "Burn (Intel)"
+    }
+}
+
+platform powerpc {
+    if {![variant_isset universal]} {
+        xcode.target        "Burn (PowerPC)"
+    }
+}
+
+livecheck.check regex
+livecheck.url http://sourceforge.net/projects/burn-osx/files/
+livecheck.regex {/Burn/(\d+\.\d+)/}

@@ -1,0 +1,53 @@
+# $Id: Portfile 56285 2009-08-26 01:42:21Z jeremyhu@macports.org $
+
+PortSystem          1.0
+
+name                xterm
+version             246
+categories          x11
+platforms           darwin
+maintainers         jeremyhu openmaintainer
+description         the ubiquitous X terminal emulator, stand-alone
+long_description    The xterm program is a terminal emulator for the X \
+                    Window System. It supports a plethora of features, \
+                    including colors, Unicode, etc.
+
+homepage            http://invisible-island.net/xterm/
+master_sites        ftp://invisible-island.net/xterm/
+checksums           md5     b0c3aa021031742d6f5009833fc4d800 \
+                    sha1    08a10609f40e5da1c2a1612abdf3a89e09282a3b \
+                    rmd160  957335c38cb3404399e741eb5009a88f5a1d21f7
+extract.suffix      .tgz
+
+depends_build \
+	port:xorg-xproto
+
+depends_run \
+	bin:luit:luit
+
+depends_lib \
+	port:ncurses \
+	port:expat \
+	port:zlib \
+	port:xorg-libXaw \
+	port:Xft2
+
+configure.args      --mandir=${prefix}/share/man --enable-luit \
+                    --enable-logging --enable-wide-chars \
+                    --enable-256-color --enable-load-vt-fonts \
+                    --x-include=${prefix}/include --x-lib=${prefix}/lib
+
+# If -ltermcap stays in the LDFLAGS, xterm is linked against both
+# /usr/lib's and ${prefix}/lib's libncurses.
+post-configure {
+    reinplace "s|-ltermcap|-lncurses|" ${worksrcpath}/Makefile
+}
+
+livecheck.check     regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}\\.tar\\.gz -> ${name}-(\\d+)\\.tgz"
+
+variant utmp description {Support updating utmp/utmpx database
+                          (installs setgid daemon)} {
+   configure.args-append   --with-utmp-setgid=daemon --with-utempter
+}

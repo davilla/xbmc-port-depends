@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54538 2009-07-29 11:47:25Z ryandesign@macports.org $
+
+PortSystem 1.0
+name             iverilog
+version          0.9.1
+set branch       [join [lrange [split ${version} .] 0 1] .]
+categories       science
+maintainers      nomaintainer
+description      Icarus Verilog
+long_description \
+    Icarus Verilog is a Verilog simulation and synthesis tool. It \
+    operates as a compiler, compiling source code writen in Verilog \
+    (IEEE-1364) into some target format. For batch simulation, the \
+    compiler can generate C++ code that is compiled and linked with \
+    a run time library (called \"vvm\") then executed as a command to \
+    run the simulation. For synthesis, the compiler generates netlists \
+    in the desired format.
+homepage         http://www.icarus.com/eda/verilog/
+platforms        darwin
+
+master_sites     ftp://ftp.icarus.com/pub/eda/verilog/v${branch}/
+distname         verilog-${version}
+checksums        md5 91e8f40d995bf5ded7b847fcc02a98bf \
+                 sha1 dc68169c77ef036de6cf7798c665f1a82a4e4254 \
+                 rmd160 1eed8ff116ef81e0f1c6ab98eac58842e4325348
+
+configure.args   mandir=\\\${prefix}/share/man
+destroot.destdir prefix=${destroot}${prefix}
+
+platform darwin 8 {
+    depends_build-append    port:bison
+}
+
+
+test.run         yes
+test.target      check

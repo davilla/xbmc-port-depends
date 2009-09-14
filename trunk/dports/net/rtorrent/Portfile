@@ -1,0 +1,40 @@
+# $Id: Portfile 52621 2009-06-20 00:37:53Z toby@macports.org $
+
+PortSystem 1.0
+
+name              rtorrent
+set real_name     rtorrent
+version           0.8.4
+categories        net
+platforms         darwin
+maintainers       gmail.com:gardnermj
+description       console-based BitTorrent client
+long_description  rTorrent is a console-based BitTorrent client. It aims to \
+                  be a fully-featured and efficient client with the ability to \
+                  run in the background using screen. It supports fast-resume \
+                  and session management.
+
+homepage      http://libtorrent.rakshasa.no/
+master_sites  ${homepage}downloads/
+distname      ${real_name}-${version}
+checksums     md5 dc0f37d933b0b6c713ad617e09441f3b \
+              sha1 83a7c0dbeb46bb074ae075d9faf5d05f0df17571 \
+              rmd160 a7a65a136161dc89e93479cee776cc084dce4ee0
+
+depends_lib  port:curl \
+             port:libsigcxx2 \
+             port:libtorrent \
+             port:ncurses \
+             port:openssl \
+             port:zlib
+
+configure.args  --mandir=${prefix}/share/man \
+                --disable-debug \
+                --enable-ipv6
+
+livecheck.name  ${real_name}
+
+variant xmlrpc description {Enable XMLRPC interface} {
+    configure.args-append  --with-xmlrpc-c
+    depends_lib-append     port:xmlrpc-c
+}

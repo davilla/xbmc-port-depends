@@ -1,0 +1,80 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55859 2009-08-20 13:19:33Z snc@macports.org $
+
+PortSystem          1.0
+
+name                shibboleth
+version             2.2.1
+categories          security www shibboleth
+#license             Apache
+maintainers         snc scantor
+description         Shibboleth Native Service Provider
+long_description    The Shibboleth System is a standards based, open source \
+                    software package for web single sign-on across or within \
+                    organizational boundaries. It allows sites to make \
+                    informed authorization decisions for individual access of \
+                    protected online resources in a privacy-preserving manner.
+
+homepage            http://shibboleth.internet2.edu/
+
+platforms           darwin
+depends_lib         port:opensaml \
+                    port:xmltooling \
+                    port:xercesc3 \
+                    port:xml-security-c \
+                    port:log4shib
+
+pre-fetch {
+    set status 0
+    if {[catch {exec ${prefix}/bin/curl --version | grep SSL} results]} {
+        if {[lindex $::errorCode 0] eq "CHILDSTATUS"} {
+            set status [lindex $::errorCode 2]
+        } else {
+            set status [lindex $::errorCode 3]
+        }
+    }
+    if {${status} != 0} {
+        return -code error "\n
+    ${name} requires curl to be installed with SSL support.
+    Please deactivate your current curl installation and
+    install the proper version of curl:
+        sudo port deactivate curl
+        sudo port install curl +ssl\n"
+    }
+}
+master_sites        http://shibboleth.internet2.edu/downloads/${name}/cppsp/${version}/
+distname            ${name}-sp-${version}
+worksrcdir          ${name}-${version}
+checksums           sha1 f667b37f98757bef951cd4fa81f13da73acff345
+
+configure.args      --with-xmltooling=${prefix} \
+                    --with-opensaml=${prefix} \
+                    --with-xerces=${prefix} \
+                    --with-xmlsec=${prefix}
+
+variant odbc description {enable odbc support} {
+	depends_lib-append port:unixODBC
+        configure.args-append --enable-odbc
+}
+
+destroot.keepdirs ${destroot}${prefix}/var/log/${name} ${destroot}${prefix}/var/log/httpd ${destroot}${prefix}/var/run/${name}
+
+destroot.args	NOKEYGEN=1
+
+post-destroot {
+	eval file delete [glob ${destroot}${prefix}/etc/${name}/*.logger]
+	eval file delete [glob ${destroot}${prefix}/etc/${name}/*.html]
+	eval file delete [glob ${destroot}${prefix}/etc/${name}/*.xml]
+	eval file delete [glob ${destroot}${prefix}/etc/${name}/shibd-*]
+	eval file delete [glob ${destroot}${prefix}/lib/${name}/*.la]
+}
+
+startupitem.create      yes
+startupitem.name        shibd
+startupitem.executable  ${prefix}/sbin/shibd -F -f -p ${prefix}/var/run/shibboleth/shibd.pid
+
+livecheck.check         regex
+livecheck.url           http://shibboleth.internet2.edu/downloads/shibboleth/cppsp/latest/
+livecheck.regex         ${name}-sp-(\\d+\\.\\d+\\.\\d+)
+
+

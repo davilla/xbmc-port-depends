@@ -1,0 +1,20 @@
+# $Id: Portfile 51396 2009-05-24 01:07:41Z vinc17@macports.org $
+
+PortSystem 1.0
+PortGroup perl5 1.0
+
+perl5.setup         Compress-Raw-Bzip2 2.019
+maintainers         vinc17
+description         Perl low-level interface to bzip2 compression library
+long_description    Compress::Raw::Bzip2 provides an interface to the \
+                    in-memory compression/uncompression functions from \
+                    the bzip2 compression library for the modules \
+                    IO::Compress::Bzip2 and IO::Compress::Bunzip2.
+checksums           md5     23c153a7aaf95ea3fbaa484ec74ed1bb \
+                    sha1    e59c1b82b6bcd5ce0975f35249dd5e2a4f366f34 \
+                    rmd160  4f35f60b4fc6ca7bfa9e6e397bbeba4c066c895a
+platforms           darwin
+
+# According to
+#   http://search.cpan.org/src/PMQS/Compress-Raw-Bzip2-2.012/README
+# Compress-Raw-Bzip2 doesn't depend on anything (it includes bzip2 code).

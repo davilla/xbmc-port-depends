@@ -1,0 +1,13 @@
+# $Id: Portfile 51021 2009-05-15 15:55:30Z and.damore@macports.org $
+PortSystem		1.0
+PortGroup		perl5 1.0
+
+perl5.setup		Term-ReadLine-Gnu 1.16
+maintainers		warp-darwinports@spin.de
+description		Perl extension for the GNU Readline/History library
+long_description	${description}
+platforms		darwin
+checksums		md5 2e07264583d5f6ca1d84cde7177888c9
+
+depends_lib-append	port:readline
+

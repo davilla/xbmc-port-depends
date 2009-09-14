@@ -1,0 +1,35 @@
+# $Id: Portfile 50220 2009-04-27 23:07:00Z devans@macports.org $
+
+PortSystem 1.0
+
+name		zenity
+version		2.26.0
+set branch  [join [lrange [split ${version} .] 0 1] .]
+description	zenity allows you to display dialog boxes from the commandline.
+long_description        This is zenity - a rewrite of gdialog, the GNOME port \
+			of dialog which allows you to display dialog boxes \
+			from the commandline and shell scripts.
+maintainers	devans openmaintainer
+categories	gnome
+platforms	darwin 
+homepage	http://www.gnome.org/
+master_sites    gnome:sources/${name}/${branch}/
+
+checksums       md5     6660ce6dac0a6ca495a0e954cb6b40a2 \
+                sha1    4dbce1e3058eb9f7166045ea4d7b468499239774 \
+                rmd160  4172557d0ba85f9040767772ca2973de96b6eb40
+
+depends_lib     port:libgnomeui \
+	        port:libnotify
+
+use_bzip2 	yes
+
+configure.args	--mandir=${prefix}/share/man --disable-scrollkeeper
+
+post-activate	{
+	system "scrollkeeper-update"
+}
+
+livecheck.check regex
+livecheck.url   http://ftp.gnome.org/pub/gnome/sources/${name}/${branch}/
+livecheck.regex {LATEST-IS-(\d+(?:\.\d+)*)}

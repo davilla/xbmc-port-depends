@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 55583 2009-08-14 06:16:25Z toby@macports.org $
+
+PortSystem          1.0
+
+name                mkvtoolnix
+version             2.9.8
+categories          multimedia
+maintainers         il.fontys.nl:ruud
+description         Matroska media files manipulation tools.
+long_description    mkvtoolnix will evolve to a set of tools to create, \
+                    alter and inspect Matroska files under Linux and other \
+                    Unices, just what the OGMtools do for the OGM format.
+homepage            http://www.bunkus.org/videotools/mkvtoolnix/
+platforms           darwin
+master_sites        ${homepage}sources/
+use_bzip2           yes
+checksums           md5 7b049aa43c6b39dfcb19f5a46d5574ac \
+                    sha1 be2b4b427befaad3d842b3ad3d55fb97b93b0468 \
+                    rmd160 d0cb8629ad35b29708a0c7777dfe9a4d623a8e10
+depends_lib         port:boost \
+                    port:expat \
+                    port:libogg \
+                    port:libmatroska \
+                    port:libvorbis \
+                    port:pcre \
+                    port:zlib
+configure.args      --mandir=${prefix}/share/man \
+                    --with-boost-regex=boost_regex-mt \
+                    --with-extra-libs=${prefix}/lib \
+                    --with-extra-includes=${prefix}/include \
+                    --without-flac \
+                    --disable-gui \
+                    --disable-wxwidgets
+default_variants    +flac
+
+variant wxwidgets description {Build with the wxWidgets GUI} {
+    depends_lib-append port:wxWidgets
+    configure.args-delete \
+        --diable-gui \
+        --disable-wxwidgets
+    configure.args-append \
+        --enable-gui \
+        --enable-wxwidgets
+}
+
+variant flac description {FLAC support} {
+    depends_lib-append port:flac
+    configure.args-delete --without-flac
+    configure.args-append --with-flac
+}
+
+variant bzip2 description {bzip2 compression support, zlib is more common} {
+    depends_lib-append port:bzip2
+    configure.args-append --enable-bzip2
+}
+
+variant lzo description {lzo compression support, zlib is more common} {
+    depends_lib-append port:lzo
+    configure.args-append --enable-lzo
+}

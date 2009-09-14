@@ -1,0 +1,22 @@
+# $Id: Portfile 56074 2009-08-24 02:55:29Z ryandesign@macports.org $
+
+PortSystem              1.0
+name                    xgraph
+version                 12.1
+revision                1
+categories              math x11
+platforms               darwin
+maintainers             nomaintainer
+description             VINT xgraph
+long_description        xgraph provides interactive plotting and graphing
+homepage                http://www.isi.edu/nsnam/xgraph
+master_sites            http://www.isi.edu/nsnam/dist/
+checksums               md5 c4cbfb3291a607dd274e7fb161b9056a
+
+depends_lib             port:xorg-libX11 \
+                        port:xorg-libsm
+
+post-destroot           {
+    move ${destroot}${prefix}/man/manm/xgraph.man \
+        ${destroot}${prefix}/share/man/man1/xgraph.1
+}

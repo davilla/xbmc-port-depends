@@ -1,0 +1,22 @@
+# $Id: Portfile 54060 2009-07-20 00:27:42Z blb@macports.org $
+
+PortSystem            1.0
+PortGroup             perl5 1.0
+
+perl5.setup           Archive-Tar 1.52
+maintainers           narf_tm openmaintainer
+description           Creation and in-memory manipulation of tar files
+long_description      ${description}
+
+platforms             darwin
+
+checksums             md5     a2bcf46c095f6b4ea747fc978a72d0da \
+                      sha1    559d198a6044ba6cd7e0ae23934a40c46f140140 \
+                      rmd160  d45ef7058903f3de23bb2c8786d1b636489cf17f
+
+depends_lib-append    port:p5-compress-zlib \
+                      port:p5-io-compress-base \
+                      port:p5-io-compress-bzip2 \
+                      port:p5-io-compress-zlib \
+                      port:p5-io-zlib \
+                      port:p5-package-constants

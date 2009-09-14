@@ -1,0 +1,72 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54558 2009-07-29 14:49:57Z snc@macports.org $
+
+PortSystem 1.0
+
+name            	maven2
+version         	2.2.0
+
+categories      	java devel
+maintainers     	kickstyle.net:gk5885
+platforms       	darwin
+
+description    		A java-based build and project management environment.
+long_description	Maven is a Java project management and project comprehension \
+				tool. Maven is based on the concept of a project object model (POM) \
+				in that all the artifacts produced by Maven are a result of consulting \
+				a well defined model for your project. Builds, documentation, source \
+				metrics, and source  cross-references are all controlled by your POM.  \
+				Maven 2.0 is a complete rewrite of Maven 1.0 and as such is better organized, \
+				faster and easier to use.
+homepage		http://maven.apache.org/
+
+master_sites		apache:maven/binaries
+distname		apache-maven-${version}-bin
+worksrcdir		apache-maven-${version}
+use_bzip2		yes
+checksums           md5     3cfb024af32c61410531c54b8364a8c4 \
+                    sha1    c301aefcd7dd9a6fb605937e1e049ed485f75188 \
+                    rmd160  96b0c1afe229bb047f3bd4045390b8f6a54a86a0
+
+
+depends_build		bin:java:kaffe
+
+use_configure		no
+universal_variant	no
+use_bzip2		yes
+
+# Source builds of maven are not possible. So, the default build is a binary
+# install of the jars.
+build.cmd		true
+
+destroot {
+	# Create the target java directory exists
+	xinstall -m 755 -d ${destroot}${prefix}/share/java/${name}
+	
+	# Copy over the needed elements of our directory tree
+	file copy \
+		${worksrcpath}/bin \
+		${worksrcpath}/boot \
+		${worksrcpath}/conf \
+		${worksrcpath}/lib \
+		${destroot}${prefix}/share/java/${name}
+		
+	# Remove extraneous bat files
+	foreach f [glob -directory ${destroot}${prefix}/share/java/${name}/bin *.bat] {
+		file delete $f
+	}
+	
+	# Fix permissions on shell scripts
+	foreach f { maven install_repo.sh } {
+		if [file exists ${destroot}${prefix}/share/java/${name}/bin/$f] {
+			file attributes ${destroot}${prefix}/share/java/${name}/bin/$f -permissions +x
+		}
+	}
+	
+	# Symlink maven into the bin directory
+	system "cd ${destroot}${prefix}/bin && ln -s ${prefix}/share/java/${name}/bin/mvn"
+}
+
+livecheck.check		regex
+livecheck.url		${homepage}download.html
+livecheck.regex		apache-maven-(\[0-9.\]+)-bin\\.tar

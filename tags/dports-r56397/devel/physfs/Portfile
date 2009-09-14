@@ -1,0 +1,43 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 50154 2009-04-26 23:47:34Z blb@macports.org $
+
+PortSystem      1.0
+name            physfs
+version         1.0.2
+categories      devel
+maintainers     nomaintainer
+platforms       darwin
+description     library providing abstract archive access
+
+long_description \
+    PhysicsFS is a library to provide abstract access \
+    to various archives. It is intended for use in \
+    video games, and the design was somewhat inspired \
+    by Quake 3's file subsystem.
+
+homepage        http://icculus.org/physfs/
+master_sites    ${homepage}downloads/
+
+checksums       md5     175c4f134611229421c9ac8e4ed8f1f7 \
+                sha1    d1e6470b9af4f73b6da4f7d65928551425b1cf4e \
+                rmd160  6487174150179681d68a0d41cab5923fb04f1997
+
+depends_build	port:libtool
+
+depends_lib     port:readline
+
+platform darwin 8 {
+    configure.ldflags-append    "-lreadline"
+}
+
+platform darwin 9 {
+    configure.ldflags-append    "-lreadline"
+}
+
+post-configure {
+	file copy -force ${prefix}/bin/glibtool ${worksrcpath}/libtool
+}
+
+livecheck.check regex
+livecheck.url   $master_sites
+livecheck.regex $name-(1\\.\[02468\](?:\\.\\d+)*)

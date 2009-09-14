@@ -1,0 +1,65 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; truncate-lines: t; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# $Id: Portfile 54544 2009-07-29 12:40:32Z snc@macports.org $
+
+PortSystem          1.0
+PortGroup           python25 1.0
+
+name                stgit
+version             0.14.3
+revision            1
+categories          devel python
+platforms           darwin
+maintainers         boeyms openmaintainer
+description         Push/pop utility on top of GIT
+long_description    StGIT is a Python application providing similar \
+                    functionality to Quilt (i.e. pushing/popping patches \
+                    to/from a stack) on top of GIT. These operations are \
+                    performed using GIT commands and the patches are stored \
+                    as GIT commit objects, allowing easy merging of the StGIT \
+                    patches into other repositories using standard GIT \
+                    functionality. \
+                    Note that StGIT is not an SCM interface on top of GIT and \
+                    it expects a previously initialised GIT repository \
+                    (unless it is cloned using StGIT directly). For standard \
+                    SCM operations, either use plain GIT commands or the \
+                    Cogito tool but it is not recommended to mix them with \
+                    the StGIT commands.
+homepage            http://www.procode.org/stgit/
+master_sites        http://homepage.ntlworld.com/cmarinas/stgit/ \
+                    http://download.gna.org/stgit/
+checksums           md5     84447155c0a86fae795928a581dc22bd \
+                    sha1    9ea2e859281f8fe3cbb7f2bd9fd83b9846923cbe \
+                    rmd160  5ed7ab18a3f98269c3fc29e4d1dd353171add7d9
+
+depends_run         port:git-core
+
+set stgdocs     "${worksrcpath}/Documentation/\\\[a-z\\\]*.txt"
+set stgman      ""
+
+post-destroot {
+    # Install what little documentation there is
+    xinstall -m 644 -W ${worksrcpath} COPYING README \
+        ${destroot}${prefix}/share/doc/${name}
+    eval xinstall -m 644 [eval glob ${stgdocs}] \
+        ${destroot}${prefix}/share/doc/${name}
+    if {${stgman} != ""} {
+        eval xinstall -m 644 [eval glob ${stgman}] \
+            ${destroot}${prefix}/share/man/man1
+    }
+}
+
+variant html_man_docs \
+    description {Build and install documentation in HTML and manpage format} {
+    #upvar stgdocs stgman
+    # Need to add post-destroot addition of extra docs...
+    lappend stgdocs ${worksrcpath}/Documentation/*.html
+    lappend stgman ${worksrcpath}/Documentation/*.1
+    depends_build-append    port:asciidoc port:xmlto
+    post-build {
+	system "cd ${worksrcpath} && make doc"
+    }
+}
+
+livecheck.check     regex
+livecheck.url       ${homepage}
+livecheck.regex     "${name}-(\\d+\\.\\d+\\.\\d+)"

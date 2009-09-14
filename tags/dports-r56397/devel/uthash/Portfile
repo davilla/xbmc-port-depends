@@ -1,0 +1,34 @@
+# $Id: Portfile 52223 2009-06-12 13:57:06Z mww@macports.org $
+
+PortSystem 1.0
+
+name			uthash
+version			1.7
+categories		devel
+platforms		darwin
+maintainers		mww
+description		easy-to-use hash implementation for C programmers.
+long_description	${description}
+
+homepage		http://uthash.sourceforge.net/
+master_sites		sourceforge
+checksums           md5     88f503986a01364db1cd657e384fad45 \
+                    sha1    5a4c45615736a2699b4723f5428add3f4d4d30fb \
+                    rmd160  d13543b7de6e360d7f51d0d4e7804be4e1c90afe
+use_bzip2		yes
+
+use_configure		no
+
+build			{}
+
+destroot {
+	xinstall -d ${destroot}${prefix}/include/uthash/
+	xinstall -m 0444 -W ${worksrcpath}/src uthash.h utlist.h \
+		${destroot}${prefix}/include/uthash/
+	xinstall -d ${destroot}${prefix}/share/doc/
+	copy ${worksrcpath}/doc ${destroot}${prefix}/share/doc/${name}
+	delete ${destroot}${prefix}/share/doc/${name}/Makefile
+}
+
+livecheck.version	uthash-${version}
+

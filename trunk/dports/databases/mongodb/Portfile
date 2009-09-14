@@ -1,0 +1,49 @@
+# $Id: Portfile 56298 2009-08-26 02:28:21Z blb@macports.org $
+
+PortSystem          1.0
+name                mongodb
+version             0.9.10
+categories          databases
+maintainers         blb openmaintainer
+description         High-performance, schema-free document-oriented database
+long_description    ${description}
+
+platforms           darwin
+
+homepage            http://www.mongodb.org/
+master_sites        http://github.com/mongodb/mongo/tarball/r${version}
+
+checksums           md5     d13f7065cd2f477b05bda7c9b8dbb794 \
+                    sha1    373f5672cc91383df4bab4ec94fe5d0c9685a4f3 \
+                    rmd160  3e9b35de2a0d29bf8c2113dd5f8b66638eaa33e2
+
+set mongodb_version_hash   b3e717fc3c2fe68da1508e45989ccd2ddbd1c822
+worksrcdir          ${name}-mongo-${mongodb_version_hash}
+
+depends_build       port:scons
+depends_lib         port:boost port:pcre port:spidermonkey port:libpcap \
+                    port:readline
+
+patchfiles          patch-SConstruct.diff
+post-patch {
+   reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/SConstruct
+}
+
+use_configure       no
+
+build.args          --usesm
+build.env           CC=${configure.cc} CXX=${configure.cxx} CPP=${configure.cpp}
+build.cmd           scons
+build.target        all mongobridge mongosniff
+
+destroot.cmd        scons
+destroot.destdir    --prefix=${destroot}${prefix}
+destroot.env        ${build.env}
+post-destroot {
+   xinstall -m 755 -W ${worksrcpath} mongobridge mongosniff \
+      ${destroot}${prefix}/bin
+}
+
+livecheck.url       ${homepage}display/DOCS/Downloads
+livecheck.regex     {mongodb/mongo/tarball/r(\d+\.\d+\.\d+)}
+

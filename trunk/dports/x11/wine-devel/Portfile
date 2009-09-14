@@ -1,0 +1,91 @@
+# $Id: Portfile 56052 2009-08-23 22:32:27Z ryandesign@macports.org $
+
+PortSystem              1.0
+
+name                    wine-devel
+set my_name             wine
+version                 1.1.28
+categories              x11
+maintainers             ryandesign jwa openmaintainer
+homepage                http://www.winehq.com/
+platforms               darwin
+distname                ${my_name}-${version}
+dist_subdir             ${my_name}
+use_bzip2               yes
+build.target            depend all
+use_parallel_build      yes
+universal_variant       no
+
+description \
+    Wine Is Not an Emulator
+
+long_description \
+    Wine is an implementation of the Windows APIs on top of X11.
+
+master_sites \
+    sourceforge:wine \
+    http://ibiblio.org/pub/linux/system/emulators/wine/
+
+checksums \
+    md5     c552fa14c2c9e2a0152f475c94fe3305 \
+    sha1    5d999b3964bc1fac8c3decf730895af7b9cc8de5 \
+    rmd160  1ebb47f17f714ae347a9cf9866f4a1cfbf76e079
+
+depends_lib \
+    port:expat \
+    port:fontconfig \
+    port:freetype \
+    port:jpeg \
+    port:libiconv \
+    port:libxml2 \
+    port:libxslt \
+    port:ncurses \
+    port:openssl \
+    port:zlib \
+    port:xorg-libsm \
+    port:xorg-libXcursor \
+    port:xorg-libXi \
+    port:xorg-libXinerama \
+    port:xorg-libXrandr \
+    port:xorg-libXxf86vm \
+    port:mesa
+
+depends_build \
+    port:pkgconfig
+
+configure.ldflags-append \
+    -framework CoreServices \
+    -lz
+
+configure.args --x-include=${prefix}/include --x-lib=${prefix}/lib
+
+platform darwin 9 {
+    # Fix "Xcode 3.x cannot build 16-bit code correctly. Use --disable-win16 if you don't need 16-bit support."
+    configure.args-append --disable-win16
+}
+
+platform darwin 10 {
+    # Fix "Xcode 3.x cannot build 16-bit code correctly. Use --disable-win16 if you don't need 16-bit support."
+    configure.args-append --disable-win16
+
+    # _getdirentries_is_not_available_when_64_bit_inodes_are_in_effect dlls/ntdll/directory.o
+    configure.cppflags-append -D_DARWIN_NO_64_BIT_INODE
+}
+
+pre-fetch {
+    if {"big" == ${os.endian}} {
+        ui_error "${name} can only be used on an Intel Mac or other computer with a little-endian processor."
+        return -code error "incompatible processor"
+    }
+}
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/libexec/wine
+    file rename ${destroot}${prefix}/bin/wine ${destroot}${prefix}/libexec/wine/wine
+    xinstall -m 755 ${filespath}/wine.in ${destroot}${prefix}/bin/wine
+    reinplace s|@PREFIX@|${prefix}|g ${destroot}${prefix}/bin/wine
+}
+
+livecheck.name          ${my_name}
+livecheck.check         sourceforge
+livecheck.regex         "<title>Source Packages (\[0-9\]+\\.\[0-9\]*\[13579\](\\.\[0-9\]+)*) released.*</title>"
