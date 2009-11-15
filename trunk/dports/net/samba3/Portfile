@@ -29,6 +29,7 @@ use_parallel_build no
 
 worksrcdir		${worksrcdir}/source
 
+configure.ldflags-append "-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
 configure.cflags-append	"-fno-common"
 configure.cppflags-append "-DHAVE_STRUCT_TIMESPEC"
 configure.args	--with-mandir=${prefix}/share/man \
@@ -40,7 +41,7 @@ configure.args	--with-mandir=${prefix}/share/man \
 				--with-krb5=/usr \
 				--without-included-popt \
 				--without-readline \
-				--enable-cups
+				--disable-cups
 
 post-patch {
 	reinplace "s|-bundle|-dynamiclib|g" ${worksrcpath}/configure
