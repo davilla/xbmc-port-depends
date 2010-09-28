@@ -38,7 +38,8 @@ configure.args  --docdir=${prefix}/share/doc/${name}-${version} \
                 --enable-unicode-properties \
                 --enable-pcretest-libreadline \
                 --enable-pcregrep-libz \
-                --enable-pcregrep-libbz2
+                --enable-pcregrep-libbz2 \
+                --disable-stack-for-recursion
 
 foreach arch ${universal_archs} {
     lappend merger_configure_ldflags(${arch}) -lncurses
